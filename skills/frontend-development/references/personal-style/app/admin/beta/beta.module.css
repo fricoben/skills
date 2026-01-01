@@ -1,0 +1,73 @@
+/* Beta Program Admin Page */
+
+.content {
+  max-width: 1200px;
+}
+
+/* Inherit shared styles */
+.loadingContainer { composes: loadingContainer from '../components/admin-styles.module.css'; }
+.spinner { composes: spinner from '../components/admin-styles.module.css'; }
+.pageHeader { composes: pageHeader from '../components/admin-styles.module.css'; }
+.pageTitle { composes: pageTitle from '../components/admin-styles.module.css'; }
+.pageSubtitle { composes: pageSubtitle from '../components/admin-styles.module.css'; }
+.alertError { composes: alertError from '../components/admin-styles.module.css'; }
+.alertSuccess { composes: alertSuccess from '../components/admin-styles.module.css'; }
+.panel { composes: panel from '../components/admin-styles.module.css'; }
+.toolbar { composes: toolbar from '../components/admin-styles.module.css'; }
+.searchWrapper { composes: searchWrapper from '../components/admin-styles.module.css'; }
+.searchIcon { composes: searchIcon from '../components/admin-styles.module.css'; }
+.searchInput { composes: searchInput from '../components/admin-styles.module.css'; }
+.stats { composes: stats from '../components/admin-styles.module.css'; }
+.stat { composes: stat from '../components/admin-styles.module.css'; }
+.statValue { composes: statValue from '../components/admin-styles.module.css'; }
+.tableWrapper { composes: tableWrapper from '../components/admin-styles.module.css'; }
+.table { composes: table from '../components/admin-styles.module.css'; }
+.emptyRow { composes: emptyRow from '../components/admin-styles.module.css'; }
+.userCell { composes: userCell from '../components/admin-styles.module.css'; }
+.userAvatar { composes: userAvatar from '../components/admin-styles.module.css'; }
+.userAvatarImg { composes: userAvatarImg from '../components/admin-styles.module.css'; }
+.userInfo { composes: userInfo from '../components/admin-styles.module.css'; }
+.userName { composes: userName from '../components/admin-styles.module.css'; }
+.userEmail { composes: userEmail from '../components/admin-styles.module.css'; }
+.badgeActive { composes: badgeActive from '../components/admin-styles.module.css'; }
+.badgeInactive { composes: badgeInactive from '../components/admin-styles.module.css'; }
+.dateCell { composes: dateCell from '../components/admin-styles.module.css'; }
+.actions { composes: actions from '../components/admin-styles.module.css'; }
+.actionBtn { composes: actionBtn from '../components/admin-styles.module.css'; }
+.actionBtnPrimary { composes: actionBtnPrimary from '../components/admin-styles.module.css'; }
+.actionBtnDanger { composes: actionBtnDanger from '../components/admin-styles.module.css'; }
+.modalOverlay { composes: modalOverlay from '../components/admin-styles.module.css'; }
+.modal { composes: modal from '../components/admin-styles.module.css'; }
+.modalClose { composes: modalClose from '../components/admin-styles.module.css'; }
+.modalTitle { composes: modalTitle from '../components/admin-styles.module.css'; }
+.modalSubtitle { composes: modalSubtitle from '../components/admin-styles.module.css'; }
+.modalSection { composes: modalSection from '../components/admin-styles.module.css'; }
+.modalLabel { composes: modalLabel from '../components/admin-styles.module.css'; }
+.modalValue { composes: modalValue from '../components/admin-styles.module.css'; }
+.modalActions { composes: modalActions from '../components/admin-styles.module.css'; }
+.modalBtn { composes: modalBtn from '../components/admin-styles.module.css'; }
+.modalBtnPrimary { composes: modalBtnPrimary from '../components/admin-styles.module.css'; }
+.modalBtnDanger { composes: modalBtnDanger from '../components/admin-styles.module.css'; }
+
+/* Beta-specific: Checkbox filter */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #666;
+  cursor: pointer;
+  user-select: none;
+}
+.checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #333;
+  cursor: pointer;
+}
+:global(html.dark) .checkbox {
+  color: #888;
+}
+:global(html.dark) .checkbox input {
+  accent-color: #666;
+}

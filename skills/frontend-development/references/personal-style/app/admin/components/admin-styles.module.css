@@ -1,0 +1,716 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SHARED ADMIN DASHBOARD STYLES
+   
+   Import this in page-specific CSS modules with:
+   composes: className from './admin-styles.module.css';
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PAGE HEADER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pageHeader {
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-family: 'ET Book', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: #111;
+}
+:global(html.dark) .pageTitle {
+  color: #eee;
+}
+
+.pageSubtitle {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+:global(html.dark) .pageSubtitle {
+  color: #888;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LOADING STATE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  color: #888;
+  min-height: calc(100vh - 3rem);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #666;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+:global(html.dark) .spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: #888;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ALERTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.alertError {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid rgba(185, 28, 28, 0.15);
+}
+:global(html.dark) .alertError {
+  background: rgba(185, 28, 28, 0.12);
+  color: #f87171;
+  border-color: rgba(185, 28, 28, 0.25);
+}
+
+.alertSuccess {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+}
+:global(html.dark) .alertSuccess {
+  background: rgba(22, 163, 74, 0.12);
+  color: #4ade80;
+  border-color: rgba(22, 163, 74, 0.25);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PANEL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.panel {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+:global(html.dark) .panel {
+  background: rgba(22, 22, 22, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOOLBAR
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  flex-wrap: wrap;
+}
+:global(html.dark) .toolbar {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.searchWrapper {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  width: 16px;
+  height: 16px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  background: #fafafa;
+  transition: all 0.15s ease;
+}
+.searchInput:focus {
+  outline: none;
+  border-color: #333;
+  background: white;
+}
+:global(html.dark) .searchInput {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+:global(html.dark) .searchInput:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+}
+:global(html.dark) .searchInput::placeholder {
+  color: #666;
+}
+
+.stats {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  color: #666;
+}
+:global(html.dark) .stats {
+  color: #888;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.statValue {
+  font-weight: 600;
+  color: #111;
+}
+:global(html.dark) .statValue {
+  color: #eee;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TABS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 10px;
+}
+:global(html.dark) .tabs {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tab:hover {
+  color: #333;
+  background: rgba(0, 0, 0, 0.04);
+}
+:global(html.dark) .tab {
+  color: #888;
+}
+:global(html.dark) .tab:hover {
+  color: #ccc;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tabActive {
+  background: white;
+  color: #111;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+:global(html.dark) .tabActive {
+  background: rgba(255, 255, 255, 0.1);
+  color: #eee;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TABLE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  table-layout: fixed;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.625rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+}
+:global(html.dark) .table th {
+  color: #666;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.table td {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  vertical-align: middle;
+  text-align: left;
+  height: 52px;
+}
+:global(html.dark) .table td {
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background: rgba(0, 0, 0, 0.01);
+}
+:global(html.dark) .table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.emptyRow {
+  text-align: center;
+  color: #888;
+  padding: 3rem 1rem !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   USER CELL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.userAvatarImg {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-height: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+  /* Some global site styles center all <img> via margin: auto; override for avatars */
+  margin: 0 !important;
+}
+
+.userInfo {
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.userName {
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:global(html.dark) .userName {
+  color: #eee;
+}
+
+.userEmail {
+  font-size: 0.75rem;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:global(html.dark) .userEmail {
+  color: #666;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BADGES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badgeActive {
+  composes: badge;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+:global(html.dark) .badgeActive {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.badgeInactive {
+  composes: badge;
+  background: rgba(0, 0, 0, 0.04);
+  color: #666;
+}
+:global(html.dark) .badgeInactive {
+  background: rgba(255, 255, 255, 0.06);
+  color: #888;
+}
+
+.badgeNew {
+  composes: badge;
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+:global(html.dark) .badgeNew {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.badgeReviewed {
+  composes: badge;
+  background: rgba(234, 179, 8, 0.1);
+  color: #ca8a04;
+}
+:global(html.dark) .badgeReviewed {
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
+}
+
+.badgeResolved {
+  composes: badge;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+:global(html.dark) .badgeResolved {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.badgeDismissed {
+  composes: badge;
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+:global(html.dark) .badgeDismissed {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DATE CELL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.dateCell {
+  color: #666;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+:global(html.dark) .dateCell {
+  color: #888;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACTIONS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.actionBtn {
+  padding: 0.375rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  color: #555;
+}
+.actionBtn:hover {
+  background: #f5f5f5;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+:global(html.dark) .actionBtn {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #bbb;
+}
+:global(html.dark) .actionBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.actionBtnPrimary {
+  composes: actionBtn;
+  background: #111;
+  border-color: #111;
+  color: white;
+}
+.actionBtnPrimary:hover {
+  background: #222;
+  border-color: #222;
+}
+:global(html.dark) .actionBtnPrimary {
+  background: #333;
+  border-color: #333;
+}
+:global(html.dark) .actionBtnPrimary:hover {
+  background: #444;
+  border-color: #444;
+}
+
+.actionBtnDanger {
+  composes: actionBtn;
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.2);
+}
+.actionBtnDanger:hover {
+  background: rgba(220, 38, 38, 0.05);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+:global(html.dark) .actionBtnDanger {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.2);
+}
+:global(html.dark) .actionBtnDanger:hover {
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODAL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 10000;
+  animation: fadeIn 0.15s ease-out;
+}
+:global(html.dark) .modalOverlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 16px;
+  padding: 1.75rem;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.2s ease-out;
+}
+:global(html.dark) .modal {
+  background: #1a1a1a;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modalClose {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+.modalClose:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+:global(html.dark) .modalClose:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #eee;
+}
+
+.modalTitle {
+  font-family: 'ET Book', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: #111;
+}
+:global(html.dark) .modalTitle {
+  color: #eee;
+}
+
+.modalSubtitle {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0 0 1.5rem;
+}
+:global(html.dark) .modalSubtitle {
+  color: #999;
+}
+
+.modalSection {
+  margin-bottom: 1rem;
+}
+
+.modalLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+  margin-bottom: 0.375rem;
+  display: block;
+}
+
+.modalValue {
+  font-size: 0.875rem;
+  color: #111;
+}
+:global(html.dark) .modalValue {
+  color: #eee;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+:global(html.dark) .modalActions {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.modalBtn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  color: #555;
+}
+.modalBtn:hover {
+  background: #f5f5f5;
+}
+.modalBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+:global(html.dark) .modalBtn {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #bbb;
+}
+:global(html.dark) .modalBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modalBtnPrimary {
+  composes: modalBtn;
+  background: #111;
+  border-color: #111;
+  color: white;
+}
+.modalBtnPrimary:hover:not(:disabled) {
+  background: #222;
+}
+:global(html.dark) .modalBtnPrimary {
+  background: #333;
+  border-color: #333;
+}
+:global(html.dark) .modalBtnPrimary:hover:not(:disabled) {
+  background: #444;
+}
+
+.modalBtnDanger {
+  composes: modalBtn;
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+.modalBtnDanger:hover:not(:disabled) {
+  background: #b91c1c;
+}

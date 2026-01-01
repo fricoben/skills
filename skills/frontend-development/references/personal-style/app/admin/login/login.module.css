@@ -1,0 +1,271 @@
+/* Admin Login Page Styles */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+:global(html.dark) .page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+:global(html.dark) .card {
+  background: #161616;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.cardHeader {
+  margin-bottom: 2rem;
+}
+
+.icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.title {
+  font-family: 'ET Book', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+:global(html.dark) .title {
+  color: #eee;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+:global(html.dark) .subtitle {
+  color: #999;
+}
+
+/* Alerts */
+.alertError {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid rgba(185, 28, 28, 0.15);
+}
+:global(html.dark) .alertError {
+  background: rgba(185, 28, 28, 0.12);
+  color: #f87171;
+  border-color: rgba(185, 28, 28, 0.25);
+}
+
+/* Check email state */
+.checkEmail {
+  text-align: center;
+  padding: 2rem;
+}
+.checkIcon {
+  width: 48px;
+  height: 48px;
+  background: #dcfce7;
+  color: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1rem;
+}
+:global(html.dark) .checkIcon {
+  background: rgba(22, 163, 74, 0.15);
+}
+.checkEmail h2 {
+  font-family: 'ET Book', Georgia, serif;
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+}
+.checkEmail p {
+  color: #666;
+  margin: 0;
+  font-size: 0.9rem;
+}
+:global(html.dark) .checkEmail p {
+  color: #999;
+}
+
+/* Auth section */
+.auth {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  text-decoration: none;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btnGithub {
+  composes: btn;
+  background: #24292f;
+  color: white;
+}
+.btnGithub:hover:not(:disabled) {
+  background: #1b1f23;
+}
+:global(html.dark) .btnGithub {
+  background: #2d333b;
+}
+:global(html.dark) .btnGithub:hover:not(:disabled) {
+  background: #373e47;
+}
+.btnDiscord {
+  composes: btn;
+  background: #5865f2;
+  color: white;
+}
+.btnDiscord:hover:not(:disabled) {
+  background: #4752c4;
+}
+.btnPrimary {
+  composes: btn;
+  background: #111;
+  color: white;
+}
+.btnPrimary:hover:not(:disabled) {
+  background: #000;
+}
+:global(html.dark) .btnPrimary {
+  background: #333;
+}
+:global(html.dark) .btnPrimary:hover:not(:disabled) {
+  background: #444;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  color: #999;
+  font-size: 0.8125rem;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+}
+:global(html.dark) .divider::before,
+:global(html.dark) .divider::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  background: #fafafa;
+  transition: all 0.15s ease;
+}
+.input:focus {
+  outline: none;
+  border-color: #333;
+  background: white;
+}
+:global(html.dark) .input {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+:global(html.dark) .input:focus {
+  border-color: #666;
+  background: #222;
+}
+
+.passwordField {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+.footer {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+:global(html.dark) .footer {
+  border-color: #2a2a2a;
+}
+
+.signoutBtn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+.signoutBtn:hover {
+  color: #666;
+}
+:global(html.dark) .signoutBtn:hover {
+  color: #bbb;
+}
