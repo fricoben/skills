@@ -1,6 +1,6 @@
 # Background Removal (Black/White/Red)
 
-Source: `/Users/thomas/work/creator/background_remover/extract_transparency.py`.
+Source: `background_remover/extract_transparency.py`.
 
 ## Problem Setup
 Given three renders of the same image:
