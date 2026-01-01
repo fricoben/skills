@@ -88,13 +88,14 @@ def substitute_directory(dir_path: Path, env: dict[str, str]) -> list[str]:
 
 def copy_skill(src: Path, dest_root: Path, dry_run: bool, env: dict[str, str]) -> list[str]:
     """Copy skill to destination, substituting placeholders. Returns unresolved vars."""
-    dest_root.mkdir(parents=True, exist_ok=True)
     dest = dest_root / src.name
-    tmp = dest_root / f".{src.name}.tmp-{uuid4().hex}"
 
     if dry_run:
         print(f"DRY-RUN: copy {src} -> {dest}")
         return []
+
+    dest_root.mkdir(parents=True, exist_ok=True)
+    tmp = dest_root / f".{src.name}.tmp-{uuid4().hex}"
 
     if tmp.exists():
         shutil.rmtree(tmp)
