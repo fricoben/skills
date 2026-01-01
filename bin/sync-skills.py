@@ -159,6 +159,10 @@ def main() -> int:
 
     if not skill_dirs:
         print("No skills found under ./skills")
+        # Still run prune if requested (to clean up orphaned skills)
+        if args.prune and not only_set:
+            prune_managed(codex_dir, set(), args.dry_run)
+            prune_managed(claude_dir, set(), args.dry_run)
         return 0
 
     # Get environment variables for placeholder substitution
