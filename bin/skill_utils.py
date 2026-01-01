@@ -98,8 +98,11 @@ def parse_frontmatter(text: str) -> Dict[str, str]:
             data[key] = value.strip()
             continue
         value = rest.strip()
-        if value.startswith(('"', "'")) and value.endswith(('"', "'")) and len(value) >= 2:
-            value = value[1:-1]
+        if len(value) >= 2:
+            if (value.startswith('"') and value.endswith('"')) or (
+                value.startswith("'") and value.endswith("'")
+            ):
+                value = value[1:-1]
         data[key] = value
         i += 1
     return data

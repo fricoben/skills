@@ -20,7 +20,7 @@ description: >
 - Output size/resolution and aspect ratio.
 - Desired output format and count.
 - For background extraction: paths to black/white/red background images and the colored background RGB (0-1).
-- Credentials placeholders: `${DASHSCOPE_API_KEY}`, `${GOOGLE_GENAI_API_KEY}`, `${OPENAI_API_KEY}`.
+- Credentials env vars: `DASHSCOPE_API_KEY`, `GOOGLE_GENAI_API_KEY`, `OPENAI_API_KEY`.
 
 ## Outputs / Definition of Done
 - A clear, credential-safe request plan or script snippet using placeholders for keys.
@@ -39,7 +39,7 @@ description: >
 - Do not embed or log API keys; require env vars or user-provided secrets.
 - Validate image sizes/formats and rate limits.
 - Ensure base64 encoding formats match API expectations.
-- Keep credentials as placeholders (e.g., `${OPENAI_API_KEY}`) so deploy-time replacement can fill them.
+- Keep credentials as placeholders (e.g., `$OPENAI_API_KEY`) so deploy-time replacement can fill them.
 
 ## References
 - references/alibaba-wan-api.md
