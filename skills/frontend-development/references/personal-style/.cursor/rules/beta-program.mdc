@@ -1,0 +1,38 @@
+---
+description: Beta program feature documentation
+globs: "app/beta/**, app/api/beta/**, migrations/*beta*"
+---
+
+# Beta Program Feature
+
+## Overview
+The beta program allows users with active licenses to get early access to new features and software.
+
+## Requirements
+- User must have at least one active license to join
+- Limited spots available (configurable via `BETA_MAX_MEMBERS` env var, default 100)
+- Joining grants the Discord "Insider" role if Discord is connected
+- Leaving removes the role
+
+## Database
+- `beta_members` table tracks membership
+- Soft delete via `left_at` column (allows rejoin tracking)
+- RLS enabled - users can only view their own membership
+
+## API Endpoints
+- `POST /api/beta/join` - Join the beta program
+- `POST /api/beta/leave` - Leave the beta program
+
+## Environment Variables
+- `DISCORD_INSIDER_ROLE_ID` - Discord role ID for beta members (default: 1318811681287049226)
+- `BETA_MAX_MEMBERS` - Maximum number of beta members (default: 100)
+
+## Discord Integration
+- Role is added/removed automatically via Discord bot when users join/leave
+
+## UI Flow
+1. User visits `/beta`
+2. If not logged in, shown auth options
+3. If logged in without license, shown "need license" message
+4. If logged in with license, can join/leave beta
+5. Discord connection reminder shown if not connected

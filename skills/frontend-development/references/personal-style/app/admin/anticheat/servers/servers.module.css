@@ -1,0 +1,217 @@
+/* AsyncAnticheat Servers Page */
+
+.content {
+  max-width: 1400px;
+}
+
+/* Inherit shared styles */
+.loadingContainer { composes: loadingContainer from '../../components/admin-styles.module.css'; }
+.spinner { composes: spinner from '../../components/admin-styles.module.css'; }
+.pageHeader { composes: pageHeader from '../../components/admin-styles.module.css'; }
+.pageTitle { composes: pageTitle from '../../components/admin-styles.module.css'; }
+.pageSubtitle { composes: pageSubtitle from '../../components/admin-styles.module.css'; }
+.alertError { composes: alertError from '../../components/admin-styles.module.css'; }
+.alertSuccess { composes: alertSuccess from '../../components/admin-styles.module.css'; }
+.panel { composes: panel from '../../components/admin-styles.module.css'; }
+.toolbar { composes: toolbar from '../../components/admin-styles.module.css'; }
+.searchWrapper { composes: searchWrapper from '../../components/admin-styles.module.css'; }
+.searchIcon { composes: searchIcon from '../../components/admin-styles.module.css'; }
+.searchInput { composes: searchInput from '../../components/admin-styles.module.css'; }
+.tableWrapper { composes: tableWrapper from '../../components/admin-styles.module.css'; }
+.table { composes: table from '../../components/admin-styles.module.css'; }
+.emptyRow { composes: emptyRow from '../../components/admin-styles.module.css'; }
+.dateCell { composes: dateCell from '../../components/admin-styles.module.css'; }
+.actions { composes: actions from '../../components/admin-styles.module.css'; }
+.actionBtn { composes: actionBtn from '../../components/admin-styles.module.css'; }
+.actionBtnPrimary { composes: actionBtnPrimary from '../../components/admin-styles.module.css'; }
+.actionBtnDanger { composes: actionBtnDanger from '../../components/admin-styles.module.css'; }
+.badgeActive { composes: badgeActive from '../../components/admin-styles.module.css'; }
+.badgeInactive { composes: badgeInactive from '../../components/admin-styles.module.css'; }
+.modalOverlay { composes: modalOverlay from '../../components/admin-styles.module.css'; }
+.modal { composes: modal from '../../components/admin-styles.module.css'; }
+.modalClose { composes: modalClose from '../../components/admin-styles.module.css'; }
+.modalTitle { composes: modalTitle from '../../components/admin-styles.module.css'; }
+.modalSubtitle { composes: modalSubtitle from '../../components/admin-styles.module.css'; }
+.modalSection { composes: modalSection from '../../components/admin-styles.module.css'; }
+.modalLabel { composes: modalLabel from '../../components/admin-styles.module.css'; }
+.modalValue { composes: modalValue from '../../components/admin-styles.module.css'; }
+.modalActions { composes: modalActions from '../../components/admin-styles.module.css'; }
+.modalBtn { composes: modalBtn from '../../components/admin-styles.module.css'; }
+.userCell { composes: userCell from '../../components/admin-styles.module.css'; }
+.userAvatar { composes: userAvatar from '../../components/admin-styles.module.css'; }
+.userAvatarImg { composes: userAvatarImg from '../../components/admin-styles.module.css'; }
+.userInfo { composes: userInfo from '../../components/admin-styles.module.css'; }
+.userName { composes: userName from '../../components/admin-styles.module.css'; }
+.userEmail { composes: userEmail from '../../components/admin-styles.module.css'; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   STATS GRID
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 1.25rem;
+  text-align: center;
+}
+:global(html.dark) .statCard {
+  background: rgba(22, 22, 22, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111;
+  line-height: 1;
+}
+:global(html.dark) .statValue {
+  color: #eee;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SERVER CELL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.serverCell {
+  min-width: 0;
+}
+
+.serverName {
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:global(html.dark) .serverName {
+  color: #eee;
+}
+
+.serverId {
+  font-size: 0.6875rem;
+  color: #888;
+  font-family: monospace;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   COUNT CELL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.countCell {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #333;
+}
+:global(html.dark) .countCell {
+  color: #ccc;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODAL SPECIFICS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.modalStatsRow {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.modalStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modalStatValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111;
+}
+:global(html.dark) .modalStatValue {
+  color: #eee;
+}
+
+.modalStatLabel {
+  font-size: 0.6875rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 0.25rem;
+}
+
+.modulesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.moduleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+:global(html.dark) .moduleItem {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.moduleInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.moduleName {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #333;
+  text-transform: capitalize;
+}
+:global(html.dark) .moduleName {
+  color: #ddd;
+}
+
+.moduleTier {
+  font-size: 0.6875rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  color: #666;
+  text-transform: uppercase;
+}
+:global(html.dark) .moduleTier {
+  background: rgba(255, 255, 255, 0.08);
+  color: #888;
+}

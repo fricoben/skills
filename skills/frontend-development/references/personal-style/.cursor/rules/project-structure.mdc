@@ -1,0 +1,70 @@
+---
+description: Project structure and conventions for thomas.md
+globs: "*.ts, *.tsx, *.css"
+---
+
+# thomas.md Project Structure
+
+## Overview
+This is a Next.js personal website with license management, beta program, and Discord integration.
+
+## Key Directories
+
+- `app/` - Next.js App Router pages and API routes
+- `app/api/` - API routes (REST endpoints)
+- `app/license/` - License claiming and management UI
+- `app/beta/` - Beta program membership UI
+- `lib/` - Shared utilities and server-side helpers
+- `migrations/` - SQL migrations for Supabase
+- `styles/` - Global CSS styles
+
+## Conventions
+
+### Page Structure
+Each feature page follows the server/client component pattern:
+- `page.tsx` - Server component that fetches data
+- `*-client.tsx` - Client component with interactivity
+- `*.module.css` - CSS modules for styling
+
+### API Routes
+- Use `createClient` from `@/lib/supabase-server` for user auth
+- Use `getSupabaseAdmin` from `@/lib/supabase` for admin operations (bypass RLS)
+- Return `NextResponse.json()` with appropriate status codes
+
+### Database
+- Supabase with Row Level Security (RLS) enabled
+- Migrations in `migrations/` folder, numbered sequentially
+- Admin client bypasses RLS for backend operations
+
+### Discord Integration
+- `lib/discord.ts` handles all Discord API calls
+- Roles are assigned/removed based on licenses and beta membership
+- Bot token and role IDs from environment variables
+
+### Payment Webhooks
+- `app/api/stripe/webhook/` - Handles Stripe events (checkout.session.completed, charge.succeeded, etc.)
+- `app/api/paypal/webhook/` - Handles PayPal IPN notifications
+- Both call `processPayment()` from `lib/payments.ts` which:
+  1. Stores payment in database (with duplicate detection via transaction_id)
+  2. Sends thank-you email via `lib/email.ts`
+  3. Starts a durable workflow for 7-day follow-up
+
+### Email System
+- `lib/email.ts` - SMTP transport via nodemailer
+- `lib/email-templates.ts` - HTML/text email templates
+- Emails include embedded signature images (CID attachments)
+- Thank-you email includes license claim URL with transaction ID
+
+### Durable Workflows
+- Uses Vercel Workflow SDK (`workflow` package)
+- `app/workflows/purchase-followup.ts` - 7-day follow-up workflow:
+  1. Sleeps for configured delay
+  2. Checks if user registered (has profile)
+  3. For Oraxen purchases: grants free Oraxen Studio license
+  4. Sends follow-up email requesting review
+- Workflow steps use `'use step'` directive for durability
+
+### License Types
+- `oraxen` - Oraxen plugin license (Discord role: Oraxen)
+- `oraxen_studio` - Oraxen Studio web app access (granted free with Oraxen)
+- `hackedserver` - HackedServer plugin license (Discord role: HackedServer)

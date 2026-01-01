@@ -169,13 +169,15 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# dotenvx - private keys (NEVER commit)
+.env.keys
 
 # Spyder project settings
 .spyderproject
@@ -244,3 +246,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Conductor workspace context
+.context/

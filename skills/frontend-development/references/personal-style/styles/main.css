@@ -1,0 +1,532 @@
+@font-face {
+  font-family: 'Inter var';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(/fonts/Inter-roman.latin.var.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Inter var';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(/fonts/Inter-italic.latin.var.woff2) format('woff2');
+  font-named-instance: 'Italic';
+}
+
+@font-face {
+  font-family: 'ET Book';
+  src: url(/fonts/etbookot-roman-webfont.woff2) format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ET Book';
+  src: url(/fonts/et-book-semi-bold-old-style-figures.woff) format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ET Book';
+  src: url(/fonts/etbookot-bold-webfont.woff2) format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ET Book';
+  src: url(/fonts/etbookot-italic-webfont.woff2) format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+body {
+  font-family: 'Inter var', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: subpixel-antialiased;
+  font-feature-settings: 'case' 1, 'cpsp' 1, 'dlig' 1, 'cv01' 1, 'cv02',
+    'cv03' 1, 'cv04' 1;
+  font-variation-settings: 'wght' 450;
+  font-variant: common-ligatures contextual;
+  letter-spacing: -0.02em;
+}
+b,
+strong,
+h3,
+h4,
+h5,
+h6 {
+  font-variation-settings: 'wght' 650;
+}
+h1 {
+  font-variation-settings: 'wght' 850;
+}
+h2 {
+  font-variation-settings: 'wght' 750;
+}
+
+@media screen and (min-device-pixel-ratio: 1.5),
+  screen and (min-resolution: 1.5dppx) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+details summary {
+  cursor: pointer;
+}
+
+img.next-image {
+  margin: 0;
+}
+
+.prose a {
+  color: #0074de;
+}
+
+.nav-line .nav-link {
+  color: #69778c;
+}
+
+/* Posts typography */
+.is-posts {
+  font-family: 'ET Book', Georgia, 'Times New Roman', serif;
+  letter-spacing: 0;
+  font-variant-ligatures: common-ligatures contextual;
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  --post-body-size: clamp(1.0625rem, 1.02rem + 0.28vw, 1.2rem);
+}
+.is-posts p,
+.is-posts li,
+.is-posts figcaption {
+  line-height: 1.45;
+}
+.is-posts p,
+.is-posts li,
+.is-posts figcaption {
+  font-size: var(--post-body-size);
+}
+
+/* Headings */
+.is-posts h1:not(.bypass-is-posts),
+.is-posts h2:not(.bypass-is-posts),
+.is-posts h3:not(.bypass-is-posts),
+.is-posts h4:not(.bypass-is-posts),
+.is-posts h5:not(.bypass-is-posts),
+.is-posts h6:not(.bypass-is-posts) {
+  font-family: 'ET Book', Georgia, 'Times New Roman', serif;
+  letter-spacing: 0;
+  font-variant-ligatures: common-ligatures contextual;
+  font-variant-numeric: lining-nums proportional-nums;
+}
+.is-posts h1:not(.bypass-is-posts) {
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(2.86rem, 5.85vw, 3.9rem);
+  line-height: 1.1;
+  margin: 1em 0 0.6em 0;
+}
+.is-posts h2:not(.bypass-is-posts) {
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(2.08rem, 4.16vw, 2.73rem);
+  line-height: 1.18;
+  margin: 1.1em 0 0.5em 0;
+}
+.is-posts h3:not(.bypass-is-posts),
+.is-posts h4:not(.bypass-is-posts),
+.is-posts h5:not(.bypass-is-posts),
+.is-posts h6:not(.bypass-is-posts) {
+  font-weight: 700;
+  font-style: normal;
+}
+.is-posts h3:not(.bypass-is-posts) {
+  font-size: clamp(1.63rem, 2.86vw, 1.95rem);
+  line-height: 1.22;
+  margin: 1em 0 0.5em 0;
+}
+.is-posts h4:not(.bypass-is-posts) {
+  font-size: clamp(1.43rem, 2.08vw, 1.63rem);
+  line-height: 1.22;
+  margin: 1em 0 0.5em 0;
+}
+.is-posts h5:not(.bypass-is-posts) {
+  font-size: 1.3rem;
+  line-height: 1.2;
+  margin: 0.8em 0 0.4em 0;
+}
+.is-posts h6:not(.bypass-is-posts) {
+  font-size: 1.24rem;
+  line-height: 1.2;
+  margin: 0.8em 0 0.4em 0;
+}
+
+/* Strong emphasis */
+.is-posts b,
+.is-posts strong {
+  font-weight: 700;
+  font-style: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+/* Blockquotes */
+.is-posts blockquote {
+  font-style: italic;
+  font-weight: 400;
+  font-variant-ligatures: common-ligatures contextual;
+  font-variant-numeric: oldstyle-nums proportional-nums;
+}
+.is-posts figcaption {
+  opacity: 0.85;
+}
+
+/* Tables: numbers use lining + tabular for alignment */
+.is-posts table,
+.is-posts table :is(th, td) {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Code: monospaced, ligatures off */
+.is-posts :is(code, pre, kbd, samp) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0;
+}
+
+/* Keep UI elements inside posts in Inter (tags, controls, and explicit bypass) */
+.is-posts .bypass-is-posts,
+.is-posts .bypass-is-posts *,
+.is-posts .not-prose,
+.is-posts .not-prose *,
+.is-posts .nextra-tag,
+.is-posts .nextra-tag * {
+  font-family: 'Inter var', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  letter-spacing: -0.02em;
+}
+
+/* Quests */
+.quests-retro {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.02);
+}
+html.dark .quests-retro,
+[data-theme='dark'] .quests-retro {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+}
+.qr-header {
+  display: grid;
+  gap: 8px;
+}
+.qr-context {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #69778c;
+}
+html.dark .qr-context,
+[data-theme='dark'] .qr-context {
+  color: #aab6c4;
+}
+.qr-divider {
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.3) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+html.dark .qr-divider,
+[data-theme='dark'] .qr-divider {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.4) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+.qr-header .qr-divider {
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+.qr-counters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.qr-counter {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.qr-counter.qr-filter {
+  cursor: pointer;
+  background: transparent;
+}
+.qr-counter.qr-filter.is-active {
+  border-width: 2px;
+  border-color: rgba(0, 0, 0, 0.35);
+  color: #000;
+}
+html.dark .qr-counter.qr-filter.is-active,
+[data-theme='dark'] .qr-counter.qr-filter.is-active {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+html.dark .qr-counter,
+[data-theme='dark'] .qr-counter {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.qr-counter-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  opacity: 0.8;
+}
+.qr-counter-value {
+  font-size: 1.2rem;
+}
+.qr-section {
+  margin-top: 14px;
+}
+.qr-section-title {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+}
+.qr-category {
+  margin-bottom: 10px;
+}
+.qr-category-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 8px 0;
+}
+.qr-category-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  padding: 2px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+html.dark .qr-category-label,
+[data-theme='dark'] .qr-category-label {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.qr-category-line {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent);
+}
+html.dark .qr-category-line,
+[data-theme='dark'] .qr-category-line {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.45), transparent);
+}
+.qr-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+.qr-card {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.02);
+}
+html.dark .qr-card,
+[data-theme='dark'] .qr-card {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+.qr-card-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.qr-card-title {
+  white-space: wrap;
+}
+.qr-chip {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px dashed rgba(0, 0, 0, 0.3);
+  width: fit-content;
+}
+html.dark .qr-chip,
+[data-theme='dark'] .qr-chip {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.chip-not_started {
+  background: rgba(0, 0, 0, 0.04);
+}
+.chip-in_progress {
+  background: rgba(255, 176, 32, 0.1);
+}
+.chip-completed {
+  background: rgba(28, 184, 65, 0.12);
+}
+
+.qr-card.is-dimmed {
+  opacity: 0.5;
+}
+.quests-dashboard {
+  display: grid;
+  gap: 1.25rem;
+}
+.quests-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+.stat-card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.02);
+}
+html.dark .stat-card,
+[data-theme='dark'] .stat-card {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+.stat-value {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+.stat-label {
+  color: #69778c;
+  font-size: 0.9rem;
+}
+html.dark .stat-label,
+[data-theme='dark'] .stat-label {
+  color: #aab6c4;
+}
+.quests-section-title {
+  margin: 0.5rem 0 0.25rem 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+.quests-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+.quest-card {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.02);
+}
+html.dark .quest-card,
+[data-theme='dark'] .quest-card {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+}
+.quest-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.quest-title {
+  margin: 0;
+}
+.quest-status {
+  font-size: 0.85rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+html.dark .quest-status,
+[data-theme='dark'] .quest-status {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.status-not_started .quest-status {
+  opacity: 0.7;
+}
+.status-in_progress .quest-status {
+  background: rgba(0, 116, 222, 0.08);
+  border-color: rgba(0, 116, 222, 0.25);
+}
+.status-completed .quest-status {
+  background: rgba(28, 184, 65, 0.12);
+  border-color: rgba(28, 184, 65, 0.25);
+}
+/* Removed per-quest progress for a cleaner dashboard vibe */
+
+/* Art page view toggle */
+.art-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.25rem 0 0.5rem 0;
+}
+.art-toggle .art-toggle-group {
+  display: inline-flex;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  background: transparent;
+}
+html.dark .art-toggle .art-toggle-group,
+[data-theme='dark'] .art-toggle .art-toggle-group {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.art-toggle .art-toggle-link {
+  display: inline-block;
+  padding: 6px 10px;
+  text-decoration: none;
+  color: inherit;
+}
+.art-toggle .art-toggle-link.is-active {
+  background: rgba(0, 0, 0, 0.06);
+}
+html.dark .art-toggle .art-toggle-link.is-active,
+[data-theme='dark'] .art-toggle .art-toggle-link.is-active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Hide toggle on narrow screens where layout difference is negligible */
+@media (max-width: 560px) {
+  .art-toggle {
+    display: none;
+  }
+}
+
+/* Our World in Data embeds */
+.owid-frame {
+  margin: 1rem 0;
+}
+.owid-iframe {
+  display: block;
+  width: 100%;
+  height: var(--owid-height, 600px);
+  border: 0;
+  border-radius: 12px;
+}
