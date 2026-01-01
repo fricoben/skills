@@ -57,3 +57,15 @@ Color is recovered from the black background using premultiplication:
 - Colored background defaults to red `(1.0, 0.0, 0.0)`.
 - Images are loaded as float32 arrays normalized to [0, 1].
 - All inputs must have identical dimensions.
+
+## Gemini Background-Variant Workflow
+Gemini does not reliably output true transparency. The preferred workflow is:
+1. Generate the base image.
+2. Ask Gemini to regenerate variants on **solid white**, **solid black**, and **solid red** backgrounds using the original image as context (keep subject/pose identical).
+3. Run the extractor with those three images to recover a clean RGBA PNG.
+
+## Two-Background Option (Quality Tradeoff)
+The extractor supports two backgrounds (black + white) and gives good results. Using **black + red only** is weaker:
+- Red background only provides an alpha estimate for the red channel; green/blue channels give no new information beyond the black image.
+- This reduces robustness around dark or red-tinted subjects and can produce less stable alpha.
+Recommendation: use **black + white** if you must use two, and use all three for best accuracy.

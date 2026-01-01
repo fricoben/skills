@@ -8,6 +8,7 @@ description: >
 ## When to Use
 - Generate images or video via Alibaba Wan, Google Gemini/Veo, or OpenAI GPT Image APIs.
 - Convert black/white/red background renders into a transparent RGBA output.
+- Prefer Gemini for general image generation; use Wan when content is restricted (e.g., babies).
 
 ## When NOT to Use
 - If API access or credentials are not available.
@@ -34,6 +35,7 @@ description: >
 - Use `references/background-removal-3-bg.md` for the three-background alpha extraction algorithm.
 - Never include real API keys; use env vars or placeholders.
 - Placeholders are replaced during deployment via dotenvx from the encrypted `.env`.
+- For transparent PNGs with Gemini: generate an image, then request variants on solid white/black/red backgrounds using the original image as context, and run the background remover to recover alpha.
 
 ## Checks & Guardrails (accessibility, consistency, performance, security)
 - Do not embed or log API keys; require env vars or user-provided secrets.
