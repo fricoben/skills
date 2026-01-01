@@ -27,6 +27,12 @@ def main() -> int:
     template = root / "templates" / "skill-skeleton"
     dest = root / "skills" / name
 
+    if not template.exists():
+        print(f"ERROR: template directory not found at {template}")
+        print("  Expected directory: templates/skill-skeleton/")
+        print("  Please create it with a SKILL.md template file.")
+        return 1
+
     if dest.exists():
         if not args.force:
             print(f"ERROR: {dest} already exists (use --force to overwrite)")
