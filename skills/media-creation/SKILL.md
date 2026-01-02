@@ -50,4 +50,5 @@ description: >
 - references/background-removal-3-bg.md
 
 ## Scripts
-- None.
+- `scripts/extract_transparency.py` - Extract RGBA from black/white/red background images.
+  Usage: `python3 scripts/extract_transparency.py --black img_black.png --white img_white.png --colored img_red.png --output result.png`

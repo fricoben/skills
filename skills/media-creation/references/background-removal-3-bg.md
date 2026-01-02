@@ -1,6 +1,6 @@
 # Background Removal (Black/White/Red)
 
-Source: `background_remover/extract_transparency.py`.
+Script location: `scripts/extract_transparency.py` (included in this skill).
 
 ## Problem Setup
 Given three renders of the same image:

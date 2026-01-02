@@ -3,7 +3,9 @@
 Sources: Google AI for Developers docs (Gemini image generation and Veo 3.1 video). Credentials redacted.
 
 ## Overview (latest models only)
-- Image generation: `gemini-3-pro-image-preview`
+- Image generation:
+  - `gemini-2.5-flash-image` (recommended, fast)
+  - `gemini-3-pro-image-preview` (higher quality)
 - Video generation: `veo-3.1-generate-preview` (paid preview)
 
 ## Auth and Base URL
