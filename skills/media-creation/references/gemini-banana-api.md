@@ -1,43 +1,48 @@
-# Google Gemini / Veo ("Banana") API Notes
+# Google Gemini / Veo API Notes
 
-Sources: Google AI for Developers docs (Gemini image generation and Veo 3.1 video). Credentials redacted.
+Sources: Google AI for Developers docs (Gemini image generation and Veo video).
 
-## Overview (latest models only)
-- Image generation:
-  - `gemini-2.5-flash-image` (recommended, fast)
-  - `gemini-3-pro-image-preview` (higher quality)
-- Video generation: `veo-3.1-generate-preview` (paid preview)
+## Overview (Current Models)
+
+### Image Generation
+- `gemini-2.5-flash-image` - Fast, good quality (recommended for most uses)
+
+### Video Generation
+- `veo-3.1-generate-preview` - Latest video generation (paid preview)
 
 ## Auth and Base URL
 - Base URL: `https://generativelanguage.googleapis.com/v1beta`
-- Header: `X-goog-api-key: ${GOOGLE_GENAI_API_KEY}` (placeholder; replaced at deploy time)
+- Header: `X-goog-api-key: ${GOOGLE_GENAI_API_KEY}`
 
-## Image Generation (Gemini 3 Pro Image)
+## Image Generation
 
 Endpoint pattern:
 - `POST /models/{model}:generateContent`
 
-Request structure:
-```json
-{
-  "contents": [{
-    "parts": [{"text": "<prompt>"}]
-  }],
-  "generationConfig": {
-    "responseModalities": ["IMAGE"],
-    "imageConfig": {
-      "imageSize": "4K",
-      "aspectRatio": "16:9"
+### Basic Request
+```bash
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent" \
+  -H "X-goog-api-key: ${GOOGLE_GENAI_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [{
+      "parts": [{"text": "A futuristic cityscape at sunset"}]
+    }],
+    "generationConfig": {
+      "responseModalities": ["IMAGE"],
+      "imageConfig": {
+        "imageSize": "4K",
+        "aspectRatio": "16:9"
+      }
     }
-  }
-}
+  }'
 ```
 
-Notes:
-- `imageSize` values: `"1K"`, `"2K"`, `"4K"` (uppercase K).
-- `aspectRatio` values include `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `9:16`, `16:9`, `21:9`.
+### Parameters
+- `imageSize` values: `"1K"`, `"2K"`, `"4K"` (uppercase K)
+- `aspectRatio` values: `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `9:16`, `16:9`, `21:9`
 
-Response contains base64 image data:
+### Response
 ```json
 {
   "candidates": [{
@@ -53,21 +58,54 @@ Response contains base64 image data:
 }
 ```
 
+## Transparency Note
+
+**Gemini does NOT support native transparency output.**
+
+For transparent images, use one of these approaches:
+1. **GPT Image 1.5** with `background: "transparent"` (recommended)
+2. Generate with Gemini, then use a background removal tool
+3. For 3D renders only: use the three-background extraction workflow
+
+The "generate variants on different backgrounds" approach does NOT work reliably with Gemini because each generation produces different results.
+
 ## Video Generation (Veo 3.1)
 
-Gemini API uses long-running operations for video generation.
+Uses long-running operations for video generation.
 
-SDK pattern:
-- `client.models.generate_videos(model="veo-3.1-generate-preview", prompt=...)`
-- Poll the operation until done, then download `generated_videos[0].video`.
+### Python SDK Pattern
+```python
+from google import genai
 
-REST pattern:
-- `POST /models/veo-3.1-generate-preview:predictLongRunning`
-- Poll `GET /{operation_name}` until `done=true`, then download the video from
-  `response.generateVideoResponse.generatedSamples[0].video.uri` using the API key.
+client = genai.Client(api_key="${GOOGLE_GENAI_API_KEY}")
 
-Image-to-video: pass a starting image along with the prompt.
+# Start generation
+operation = client.models.generate_videos(
+    model="veo-3.1-generate-preview",
+    prompt="A time-lapse of clouds over mountains"
+)
+
+# Poll until done
+while not operation.done:
+    time.sleep(10)
+    operation = client.operations.get(operation.name)
+
+# Download result
+video_data = operation.result.generated_videos[0].video
+```
+
+### REST Pattern
+1. `POST /models/veo-3.1-generate-preview:predictLongRunning`
+2. Poll `GET /{operation_name}` until `done=true`
+3. Download from `response.generateVideoResponse.generatedSamples[0].video.uri`
+
+### Image-to-Video
+Pass a starting image along with the prompt to create video from a still image.
+
+## Rate Limits
+- Check current quotas in Google AI Studio
+- Video generation has stricter limits than image generation
 
 ## Security
-- Do not store API keys in repo.
-- Use environment variables or a local config file ignored by Git.
+- Never store API keys in code
+- Use `${GOOGLE_GENAI_API_KEY}` placeholder (substituted during skill sync)
