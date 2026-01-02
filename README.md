@@ -47,6 +47,14 @@ are stored encrypted in `.env` using [dotenvx](https://dotenvx.com).
 4. Encrypt: `dotenvx encrypt`
 5. Keep `.env.keys` safe (gitignored - contains the private key)
 
+### Getting the private key
+
+The `.env.keys` file is stored at `~/work/skills/.env.keys`. Copy it to this repo before syncing:
+
+```bash
+cp ~/work/skills/.env.keys .env.keys
+```
+
 ### Files
 
 | File | Committed | Purpose |
