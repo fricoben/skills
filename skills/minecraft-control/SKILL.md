@@ -3,7 +3,7 @@ name: minecraft-control
 description: >
   Control Minecraft launcher and client via shard (CLI launcher) and mccli (in-game control).
   Also covers test server deployment at demo.oraxen.com.
-  Trigger terms: minecraft, shard, mccli, mc-cli, launcher, shader, teleport, screenshot, game control, oraxen, demo server, test server, deploy plugin.
+  Trigger terms: minecraft, shard, mccli, mc-cli, launcher, shader, teleport, screenshot, game control, oraxen, demo server, test server, deploy plugin, neoforge, fabric.
 ---
 
 ## When to Use
@@ -17,14 +17,17 @@ description: >
 ## Prerequisites
 - `shard` CLI: `/Users/thomas/.cargo/bin/shard`
 - `mccli` CLI: `/Users/thomas/Library/Python/3.9/bin/mccli`
-- The **"Vanilla Debugging"** profile in shard has the `mccli` mod pre-installed.
+- Profiles with mccli pre-installed:
+  - **"Fabric 1.21.11"** - Fabric loader with mccli mod
+  - **"NeoForge 1.21.11"** - NeoForge loader with mccli-neoforge mod
 
 ## Quick Start
 
 ### Launch Minecraft
 ```bash
 shard list                                    # List profiles
-shard launch "Vanilla Debugging"              # Launch (has mccli mod)
+shard launch "Fabric 1.21.11"                 # Launch Fabric (has mccli mod)
+shard launch "NeoForge 1.21.11"               # Launch NeoForge (has mccli mod)
 ```
 
 ### Control Running Client
@@ -55,6 +58,7 @@ mccli execute "time set day"                  # Run command
 | `mccli shader list/set/reload` | Shader management |
 | `mccli execute "<cmd>"` | Run Minecraft command |
 | `mccli block` / `mccli entity` | Inspect targeted block/entity |
+| `mccli world list/load/create/delete` | Singleplayer world management |
 
 See `references/mccli-commands.md` for full command reference.
 

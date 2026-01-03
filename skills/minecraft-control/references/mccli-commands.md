@@ -227,6 +227,15 @@ mccli macro macro.json                # Run macro from file
 echo '{"commands": [...]}' | mccli macro -  # From stdin
 ```
 
+### world
+Singleplayer world management.
+```bash
+mccli world list                      # List available worlds
+mccli world load --name "World Name"  # Load a world
+mccli world create --name "New World" # Create a new world
+mccli world delete --name "World Name" # Delete a world
+```
+
 ## Multi-Instance Support
 
 When multiple Minecraft instances are running with mccli:

@@ -101,8 +101,8 @@ When you run `shard profile show`, you get a JSON manifest:
   "id": "Profile Name",
   "mcVersion": "1.21.11",
   "loader": {
-    "type": "fabric",
-    "version": "0.18.4"
+    "type": "fabric",       // or "neoforge"
+    "version": "0.18.4"     // loader version
   },
   "mods": [
     {
@@ -140,10 +140,28 @@ When you run `shard profile show`, you get a JSON manifest:
 
 ## Pre-configured Profiles
 
-### Vanilla Debugging
+### Fabric 1.21.11
 - Minecraft: 1.21.11
 - Loader: Fabric 0.18.4
 - Mods: Fabric API, mccli mod
 - Shaders: ComplementaryReimagined r5.6.1
 
-This profile is ready for LLM-assisted shader development with mccli pre-installed.
+### NeoForge 1.21.11
+- Minecraft: 1.21.11
+- Loader: NeoForge 21.11.19-beta
+- Mods: mccli-neoforge mod
+
+Both profiles are ready for LLM-assisted development with mccli pre-installed.
+
+## Supported Mod Loaders
+
+| Loader | Type | Notes |
+|--------|------|-------|
+| Fabric | `fabric` | Lightweight, fast updates |
+| NeoForge | `neoforge` | Fork of Forge, modern API |
+
+When creating profiles, specify the loader type:
+```bash
+shard profile create "My Profile" --mc 1.21.4 --loader fabric
+shard profile create "My Profile" --mc 1.21.4 --loader neoforge
+```
