@@ -1,55 +1,122 @@
 # agent-skills
 
-Canonical repository for reusable agent skills. Skills are deployed by copying into
-user-level directories for Codex and Claude Code (no symlinks).
+Canonical repository for reusable agent skills, MCP servers, and custom commands.
+Configurations are deployed by copying into user-level directories for Codex and Claude Code.
 
-## Repository layout
-
-- `skills/` - canonical skills (empty for now)
-- `bin/` - validation, sync, and scaffolding utilities
-- `templates/` - skeletons for creating new skills
-- `.github/workflows/ci.yml` - CI validation
-
-## Validate skills
+## Quick Start
 
 ```bash
-python3 bin/validate-skills.py
+# Sync everything
+python3 bin/sync-skills.py      # Skills
+python3 bin/sync-mcp.py         # MCP servers
+python3 bin/sync-commands.py    # Custom commands/prompts
 ```
 
-## Sync skills to user directories
+## Repository Layout
 
-Defaults:
-- Codex: `~/.codex/skills/`
+```
+├── skills/           # Reusable agent skills (SKILL.md + references)
+├── mcp/              # MCP server configurations
+│   └── servers.json  # Canonical MCP definitions
+├── commands/         # Custom slash commands/prompts
+├── bin/              # Sync and validation scripts
+└── templates/        # Scaffolds for new skills
+```
+
+## Syncing MCP Servers
+
+MCP servers are defined once in `mcp/servers.json` and synced to both tools.
+
+```bash
+python3 bin/sync-mcp.py           # Sync to both tools
+python3 bin/sync-mcp.py --dry-run # Preview changes
+python3 bin/sync-mcp.py --claude-only
+python3 bin/sync-mcp.py --codex-only
+```
+
+**Destinations:**
+- Claude Code: `~/.claude.json` → `mcpServers`
+- Codex: `~/.codex/config.toml` → `[mcp_servers.*]`
+
+**Example `mcp/servers.json`:**
+
+```json
+{
+  "playwright": {
+    "type": "stdio",
+    "command": "bunx",
+    "args": ["@playwright/mcp@latest"]
+  },
+  "supabase": {
+    "type": "http",
+    "url": "https://mcp.supabase.com/mcp?project_ref=..."
+  }
+}
+```
+
+## Syncing Skills
+
+Skills are copied to user-level directories for both tools.
+
+```bash
+python3 bin/sync-skills.py              # Sync all skills
+python3 bin/sync-skills.py --dry-run    # Preview changes
+python3 bin/sync-skills.py --prune      # Remove orphaned skills
+python3 bin/sync-skills.py --only myapp # Sync specific skill
+```
+
+**Destinations:**
 - Claude Code: `~/.claude/skills/`
+- Codex: `~/.codex/skills/`
 
-Override defaults:
+**Override with environment variables:**
 - `CODEX_SKILLS_DIR`
 - `CLAUDE_SKILLS_DIR`
 
-Example:
+## Syncing Commands
+
+Custom commands are defined in `commands/` and synced to both tools.
 
 ```bash
-python3 bin/sync-skills.py --dry-run
-python3 bin/sync-skills.py --prune
-python3 bin/sync-skills.py --only myapp-ui
+python3 bin/sync-commands.py              # Sync all commands
+python3 bin/sync-commands.py --dry-run    # Preview changes
+python3 bin/sync-commands.py --prune      # Remove orphaned commands
 ```
 
-## Secrets management with dotenvx
+**Destinations:**
+- Claude Code: `~/.claude/commands/` (invoked as `/command-name`)
+- Codex: `~/.codex/prompts/` (invoked as `/prompts:command-name`)
 
-Skills can use `${VAR_NAME}` placeholders that get substituted at sync time. Secrets
-are stored encrypted in `.env` using [dotenvx](https://dotenvx.com).
+**Example `commands/review-pr.md`:**
+
+```markdown
+---
+description: Review PR changes for issues
+---
+
+Review the current PR diff and identify:
+1. Potential bugs or issues
+2. Missing error handling
+3. Security concerns
+4. Suggestions for improvement
+```
+
+## Secrets Management with dotenvx
+
+Skills can use `${VAR_NAME}` placeholders that get substituted at sync time.
+Secrets are stored encrypted in `.env` using [dotenvx](https://dotenvx.com).
 
 ### Setup
 
-1. Install dotenvx: `npm install -g @dotenvx/dotenvx` (or `brew install dotenvx/brew/dotenvx`)
+1. Install dotenvx: `npm install -g @dotenvx/dotenvx`
 2. Copy the example: `cp .env.example .env`
 3. Add your secrets to `.env`
 4. Encrypt: `dotenvx encrypt`
-5. Keep `.env.keys` safe (gitignored - contains the private key)
+5. Keep `.env.keys` safe (gitignored)
 
-### Getting the private key
+### Getting the Private Key
 
-The `.env.keys` file is stored at `~/work/skills/.env.keys`. Copy it to this repo before syncing:
+The `.env.keys` file is stored at `~/work/skills/.env.keys`. Copy it before syncing:
 
 ```bash
 cp ~/work/skills/.env.keys .env.keys
@@ -63,37 +130,40 @@ cp ~/work/skills/.env.keys .env.keys
 | `.env.keys` | No | Private decryption key (gitignored) |
 | `.env.example` | Yes | Template showing required variables |
 
-### Using placeholders in skills
-
-In your skill markdown files, use `${VAR_NAME}` syntax:
+### Using Placeholders in Skills
 
 ```markdown
 ## Procedure
 1. Call the API with key `${OPENAI_API_KEY}`
 ```
 
-### Syncing with secrets
+### Syncing with Secrets
 
 ```bash
 # Decrypt and inject secrets, then sync
 dotenvx run -- python3 bin/sync-skills.py
 
-# In production/CI, set DOTENV_PRIVATE_KEY env var instead of using .env.keys
+# In CI, set DOTENV_PRIVATE_KEY instead
 DOTENV_PRIVATE_KEY="..." python3 bin/sync-skills.py
 ```
 
-Unresolved placeholders will trigger a warning but won't fail the sync.
+## Managed Marker
 
-## Managed marker
+Each deployed skill contains a `.managed-by-agent-skills-repo` file with:
+- Repo URL
+- Git commit SHA
+- Timestamp (UTC)
+- Skill name
 
-Each deployed skill contains a `.managed-by-agent-skills-repo` file with the repo
-URL (if available), git commit SHA, timestamp (UTC), and skill name.
+## Validation
+
+```bash
+python3 bin/validate-skills.py
+```
+
+CI runs validation on push and pull request.
 
 ## Templates
 
-- `templates/skill-skeleton/` - base skill scaffold
-- `templates/project-skills-skeleton/` - example for tool-specific project skills
-
-## CI
-
-CI runs `bin/validate-skills.py` on push and pull request.
+- `templates/skill-skeleton/` - Base skill scaffold
+- `templates/project-skills-skeleton/` - Tool-specific project skills

@@ -1,6 +1,19 @@
 # Agent Skills Repository
 
-This is the canonical repository for reusable agent skills.
+This is the canonical repository for reusable agent skills and MCP server configurations.
+
+## Syncing MCP Servers
+
+MCP servers are defined in `mcp/servers.json`. Sync them to both Claude Code and Codex:
+
+```bash
+python3 bin/sync-mcp.py
+```
+
+Options:
+- `--dry-run` - Preview changes without modifying files
+- `--claude-only` - Only sync to Claude Code (~/.claude.json)
+- `--codex-only` - Only sync to Codex (~/.codex/config.toml)
 
 ## Syncing Skills
 
@@ -24,8 +37,10 @@ dotenvx run -- python3 bin/sync-skills.py --only media-creation
 
 ## Key Files
 
+- `mcp/servers.json` - Canonical MCP server definitions (syncs to Claude Code and Codex)
 - `.env` - Encrypted secrets (committed)
 - `.env.keys` - Private decryption key (copy from `~/work/skills/.env.keys`, gitignored)
+- `bin/sync-mcp.py` - Deploys MCP configs to `~/.claude.json` and `~/.codex/config.toml`
 - `bin/sync-skills.py` - Deploys skills to `~/.claude/skills/` and `~/.codex/skills/`
 
 ## Placeholder Substitution
