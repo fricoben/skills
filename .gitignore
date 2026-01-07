@@ -248,3 +248,6 @@ $RECYCLE.BIN/
 
 # Conductor workspace context
 .context/
+
+# Playwright MCP generated files
+.playwright-mcp/
