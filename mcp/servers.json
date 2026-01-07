@@ -8,5 +8,9 @@
   "notion": {
     "type": "http",
     "url": "https://mcp.notion.com/mcp"
+  },
+  "vibetracking.dev supabase": {
+    "type": "http",
+    "url": "https://mcp.supabase.com/mcp?project_ref=qsvmtjcuymxkuuvhkape&read_only=true"
   }
 }
