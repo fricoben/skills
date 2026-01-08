@@ -123,6 +123,18 @@ Generate a summary:
 [Actionable fixes for issues found]
 ```
 
+### 7. Cleanup (CRITICAL)
+**You MUST kill any localhost server you started for testing:**
+```
+1. Close the browser using browser_close
+2. Find and kill any localhost processes you started:
+   - Use: lsof -ti:PORT | xargs kill -9
+   - Or: pkill -f "npm run dev" (or whatever command was used)
+3. Verify the port is free: lsof -i:PORT (should return nothing)
+```
+
+⚠️ **NEVER leave localhost servers running after testing.** This prevents port conflicts for subsequent tests and avoids resource leaks.
+
 ## Checks & Guardrails
 - Always take a snapshot before performing actions to understand current state
 - Use browser_snapshot (accessibility tree) for interaction, browser_take_screenshot for visual evidence
