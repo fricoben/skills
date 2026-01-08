@@ -17,37 +17,34 @@ Options:
 
 ## Syncing Skills
 
-Before syncing skills with secrets, copy the private key:
+Sync skills to Claude Code and Codex:
 
 ```bash
-cp ~/work/skills/.env.keys .env.keys
-```
-
-Then sync with dotenvx:
-
-```bash
-dotenvx run -- python3 bin/sync-skills.py
+python3 bin/sync-skills.py
 ```
 
 Or sync a specific skill:
 
 ```bash
-dotenvx run -- python3 bin/sync-skills.py --only media-creation
+python3 bin/sync-skills.py --only media-compression
 ```
 
 ## Key Files
 
 - `mcp/servers.json` - Canonical MCP server definitions (syncs to Claude Code and Codex)
-- `.env` - Encrypted secrets (committed)
-- `.env.keys` - Private decryption key (copy from `~/work/skills/.env.keys`, gitignored)
 - `bin/sync-mcp.py` - Deploys MCP configs to `~/.claude.json` and `~/.codex/config.toml`
 - `bin/sync-skills.py` - Deploys skills to `~/.claude/skills/` and `~/.codex/skills/`
+- `skills/*/SKILL.md` - Individual skill definitions
 
-## Placeholder Substitution
+## Managing Secrets with dotenvx
 
-Skills can use `${VAR_NAME}` placeholders in markdown files. These are replaced with actual values from environment variables during sync.
+This repo includes a `dotenvx-secrets` skill for managing encrypted environment variables.
 
-Available secrets:
-- `${OPENAI_API_KEY}` - OpenAI API key
-- `${GOOGLE_GENAI_API_KEY}` - Google Gemini API key
-- `${DASHSCOPE_API_KEY}` - Alibaba DashScope API key
+For projects that need secrets (like API keys), use dotenvx vault:
+
+1. Create project-specific env files (e.g., `.env.vibetracking`)
+2. Encrypt with `dotenvx encrypt -f .env.projectname`
+3. Store `.env.keys` securely (never commit)
+4. Run with `dotenvx run -f .env.projectname -- <command>`
+
+See `skills/dotenvx-secrets/SKILL.md` for full documentation.
