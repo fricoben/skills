@@ -1,22 +1,58 @@
 ---
 name: bitwarden-secrets
 description: >
-  Manage and retrieve secrets from Bitwarden Secrets Manager using the bws CLI.
+  Manage and retrieve secrets from Bitwarden Secrets Manager using the bws CLI
+  for user simulation and automated testing purposes.
   Trigger terms: bitwarden, bws, secrets manager, credentials, api keys, secrets,
-  machine account, access token, inject secrets, environment variables.
+  machine account, access token, inject secrets, environment variables, user simulation,
+  test credentials, login credentials.
 ---
 
 ## When to Use
+- **User simulation testing**: Retrieving login credentials for Playwright MCP to simulate real user flows
 - Retrieving secrets from Bitwarden Secrets Manager for a project
 - Setting up a new project with Bitwarden Secrets Manager
 - Injecting secrets into application runtime via `bws run`
 - Syncing Bitwarden secrets to local `.env` files (encrypted with dotenvx)
 - Managing secrets across multiple projects/environments
+- Automated E2E testing that requires real user credentials
 
 ## When NOT to Use
 - The user wants you (the agent) to handle actual secret values directly
 - Simple local-only secrets that don't need centralized management
 - One-time passwords or TOTP codes (use Bitwarden Password Manager)
+
+## Primary Use Case: User Simulation with Playwright MCP
+
+This skill is designed to work alongside **Playwright MCP** and other testing tools to enable realistic user simulation. The workflow is:
+
+1. **Retrieve credentials** from Bitwarden Secrets Manager (email, password, API keys)
+2. **Use Playwright MCP** to automate browser interactions with those credentials
+3. **Simulate real user flows** (login, form submission, authenticated actions)
+
+### Example: Login Flow Simulation
+
+```bash
+# 1. Get credentials from Bitwarden (agent retrieves these)
+EMAIL=$(bws secret get <EMAIL_SECRET_ID> -o json | jq -r '.value')
+PASSWORD=$(bws secret get <PASSWORD_SECRET_ID> -o json | jq -r '.value')
+
+# 2. Use with Playwright MCP to:
+#    - Navigate to login page
+#    - Fill email field with $EMAIL
+#    - Fill password field with $PASSWORD
+#    - Click submit
+#    - Verify authenticated state
+```
+
+### Integration with Project Tools
+
+| Project Tool | Integration |
+|--------------|-------------|
+| **Playwright MCP** | Use retrieved credentials to fill login forms, authenticate users |
+| **Supabase MCP** | Retrieve service keys, connection strings for database operations |
+| **API Testing** | Inject API keys into request headers |
+| **E2E Tests** | Provide test user credentials for authenticated flows |
 
 ## CRITICAL: Agent Limitations
 
@@ -184,6 +220,47 @@ When user says "I need to set up Bitwarden secrets for my vibetracking project":
 - Verify `BWS_ACCESS_TOKEN` is set before running commands
 - Machine accounts have scoped access - verify project permissions
 - Rate limits apply when making many requests from same IP
+
+## Agent Workflow: Using Credentials with Playwright MCP
+
+When the agent needs to simulate a user login or authenticated action:
+
+### Step 1: Retrieve Credentials
+The agent runs bws commands to get the credentials into environment variables:
+```bash
+# Agent executes this to get credentials
+bws secret get <SECRET_ID> -o json | jq -r '.value'
+```
+
+### Step 2: Use Playwright MCP Tools
+With credentials retrieved, the agent uses Playwright MCP tools:
+
+1. `browser_navigate` - Go to login page
+2. `browser_snapshot` - Get page structure and element refs
+3. `browser_type` - Fill email/username field with retrieved credential
+4. `browser_type` - Fill password field with retrieved credential
+5. `browser_click` - Click login/submit button
+6. `browser_snapshot` - Verify authenticated state
+
+### Step 3: Continue Authenticated Flow
+Once logged in, the agent can:
+- Navigate protected pages
+- Fill forms with user data
+- Test user-specific features
+- Verify permissions and access
+
+### Example: Complete Login Simulation
+
+```
+Agent retrieves: EMAIL=user@example.com, PASSWORD=***
+
+1. browser_navigate: https://app.example.com/login
+2. browser_snapshot: Get form field refs
+3. browser_type: ref="email-input", text=<retrieved email>
+4. browser_type: ref="password-input", text=<retrieved password>
+5. browser_click: ref="login-button"
+6. browser_snapshot: Verify dashboard loaded
+```
 
 ## References
 - [bws Commands Reference](references/bws-commands.md)
