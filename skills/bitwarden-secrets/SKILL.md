@@ -68,15 +68,21 @@ The agent must NOT:
 
 ## Prerequisites
 
-The agent should verify these are set up:
+The `bws` CLI is already installed at: **`~/bin/bws`**
+
+The `BWS_ACCESS_TOKEN` is stored in the project's **`.env.local`** file (encrypted with dotenvx).
+
+The agent should verify setup:
 
 ```bash
-# Check bws is installed
-bws --version
+# Check bws is working (already installed at ~/bin/bws)
+~/bin/bws --version
 
-# Check access token is available (don't show the value!)
-echo ${BWS_ACCESS_TOKEN:+Access token is set}
+# Run bws commands with the access token from .env.local
+dotenvx run -f .env.local -- ~/bin/bws project list
 ```
+
+> **Note:** If `bws` is not in your PATH, use the full path `~/bin/bws` or add `~/bin` to your PATH.
 
 ## Inputs the Agent Should Ask For (only if missing)
 - **Project name**: Which Bitwarden project to use (e.g., "vibetracking.dev")
