@@ -78,6 +78,29 @@ bws --version
 echo ${BWS_ACCESS_TOKEN:+Access token is set}
 ```
 
+## macOS Keychain Integration
+
+The BWS access token can be stored securely in macOS Keychain under the service name `bws-access-token`:
+
+```bash
+# Store the token in Keychain (user runs this once)
+security add-generic-password -a "$USER" -s "bws-access-token" -w "your-token-here"
+
+# Retrieve and export as environment variable
+export BWS_ACCESS_TOKEN=$(security find-generic-password -a "$USER" -s "bws-access-token" -w)
+```
+
+**For persistent use**, add this line to your shell profile (`~/.zshrc` or `~/.bashrc`):
+
+```bash
+export BWS_ACCESS_TOKEN=$(security find-generic-password -a "$USER" -s "bws-access-token" -w 2>/dev/null)
+```
+
+This approach:
+- Stores the token encrypted in macOS Keychain (protected by login credentials)
+- Makes it automatically available in new terminal sessions
+- Avoids plain-text secrets in config files
+
 ## Inputs the Agent Should Ask For (only if missing)
 - **Project name**: Which Bitwarden project to use (e.g., "vibetracking.dev")
 - **Secret names**: What secrets are needed (e.g., `SUPABASE_URL`, `API_KEY`)
