@@ -6,10 +6,31 @@ description: >
   .env, credentials, api keys, secure config, decrypt, encrypt secrets.
 ---
 
+## Naming Convention (CRITICAL)
+
+All naming derives from the **git repository name** (not the workspace or arbitrary project names):
+
+| Repo Name | .env File | Private Key Variable |
+|-----------|-----------|---------------------|
+| `relens-ai` | `.env.relens_ai` | `DOTENV_PRIVATE_KEY_RELENS_AI` |
+| `vibe-tracking` | `.env.vibe_tracking` | `DOTENV_PRIVATE_KEY_VIBE_TRACKING` |
+| `my_app` | `.env.my_app` | `DOTENV_PRIVATE_KEY_MY_APP` |
+
+**Rules:**
+- Replace hyphens (`-`) with underscores (`_`)
+- `.env` file uses lowercase: `.env.repo_name`
+- Key variable uses UPPERCASE: `DOTENV_PRIVATE_KEY_REPO_NAME`
+
+**Auto-detect repo name:**
+```bash
+# Get the repo name (works in any subdirectory)
+basename $(git rev-parse --show-toplevel)
+```
+
 ## When to Use
 - Adding new encrypted environment variables to a project
 - Setting up dotenvx vault for a new project
-- Creating project-specific .env files (e.g., `.env.vibetracking`)
+- Creating repo-specific .env files (e.g., `.env.relens_ai`)
 - Migrating plaintext .env files to encrypted format
 - Sharing secrets securely across machines using vault
 
@@ -31,9 +52,10 @@ The agent must NOT:
 - Store or process actual secret values
 
 ## Inputs the Agent Should Ask For (only if missing)
-- **Project name**: What project is this for? (e.g., "vibetracking", "myapp")
 - **Secret names**: What environment variables need to be added? (e.g., `SUPABASE_URL`, `API_KEY`)
-- **Environment**: Is this for dev, staging, or production?
+- **Environment**: Is this for dev, staging, or production? (optional, defaults to repo-based naming)
+
+**Note:** The agent should auto-detect the repo name from git. Do NOT ask the user for a project name.
 
 ## Outputs / Definition of Done
 - User has exact commands to run for adding their secrets
@@ -51,26 +73,34 @@ If not installed:
 brew install dotenvx/brew/dotenvx
 ```
 
-### 2. Initialize Vault (First Time Only)
+### 2. Get the Repo Name
 
-For a new project, initialize dotenvx:
+Always derive naming from the git repo:
+
 ```bash
-dotenvx vault init
+# Get repo name and convert to env-friendly format
+REPO_NAME=$(basename $(git rev-parse --show-toplevel) | tr '-' '_')
+echo "Repo: $REPO_NAME"
+echo "Env file: .env.${REPO_NAME,,}"
+echo "Key var: DOTENV_PRIVATE_KEY_${REPO_NAME^^}"
 ```
 
-This creates:
-- `.env.vault` - Encrypted vault file (commit this)
-- `.env.keys` - Private decryption keys (NEVER commit, add to .gitignore)
+Example output for `relens-ai` repo:
+```
+Repo: relens_ai
+Env file: .env.relens_ai
+Key var: DOTENV_PRIVATE_KEY_RELENS_AI
+```
 
-### 3. Add Secrets to Project-Specific .env File
+### 3. Add Secrets to Repo-Specific .env File
 
 **Tell the user to run these commands themselves:**
 
-For a project like "vibetracking", create `.env.vibetracking`:
+For a repo like `relens-ai`, create `.env.relens_ai`:
 
 ```bash
 # Create the env file with your secrets (run this yourself, replacing with real values)
-cat > .env.vibetracking << 'EOF'
+cat > .env.relens_ai << 'EOF'
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key-here"
@@ -80,7 +110,7 @@ EOF
 ### 4. Encrypt the Secrets
 
 ```bash
-dotenvx encrypt -f .env.vibetracking
+dotenvx encrypt -f .env.relens_ai
 ```
 
 This transforms plaintext values into encrypted format:
@@ -92,7 +122,7 @@ NEXT_PUBLIC_SUPABASE_URL="encrypted:BO3QmRRr3ZzK1tXBU8ILXI..."
 
 The encryption creates/updates `.env.keys` with a private key like:
 ```
-DOTENV_PRIVATE_KEY_VIBETRACKING="abc123..."
+DOTENV_PRIVATE_KEY_RELENS_AI="abc123..."
 ```
 
 **NEVER commit `.env.keys` to any repository.** Instead, store keys in `~/.dotenvx/keys` so they persist across all terminals and workspaces.
@@ -120,10 +150,11 @@ After encrypting, copy the key from `.env.keys` to your global file:
 # View the generated key
 cat .env.keys
 
-# Add to global keys (run yourself, replacing with real value)
-echo 'export DOTENV_PRIVATE_KEY_PROJECTNAME="your-key-here"' >> ~/.dotenvx/keys
+# Add to global keys (run yourself, replacing with real value from above)
+# NOTE: The key name must be UPPERCASE and match the repo name pattern
+echo 'export DOTENV_PRIVATE_KEY_RELENS_AI="your-key-here"' >> ~/.dotenvx/keys
 
-# Delete the local .env.keys file (optional but recommended)
+# Delete the local .env.keys file (recommended)
 rm .env.keys
 ```
 
@@ -144,14 +175,14 @@ The global approach means:
 
 Run any command with decrypted environment:
 ```bash
-dotenvx run -f .env.vibetracking -- npm run dev
-dotenvx run -f .env.vibetracking -- python main.py
+dotenvx run -f .env.relens_ai -- npm run dev
+dotenvx run -f .env.relens_ai -- python main.py
 ```
 
 ### 7. Share Across Machines
 
 To use on another machine:
-1. Clone the repo (includes encrypted `.env.vibetracking`)
+1. Clone the repo (includes encrypted `.env.relens_ai`)
 2. Add the private key to `~/.dotenvx/keys` on the new machine
 3. Run with `dotenvx run`
 
@@ -162,25 +193,25 @@ To use on another machine:
 | Task | Command |
 |------|---------|
 | Install dotenvx | `brew install dotenvx/brew/dotenvx` |
-| Initialize vault | `dotenvx vault init` |
-| Encrypt env file | `dotenvx encrypt -f .env.projectname` |
-| Run with secrets | `dotenvx run -f .env.projectname -- <command>` |
-| Decrypt (view) | `dotenvx decrypt -f .env.projectname` |
-| Add to existing | Edit file, then `dotenvx encrypt -f .env.projectname` |
+| Get repo name | `basename $(git rev-parse --show-toplevel) \| tr '-' '_'` |
+| Encrypt env file | `dotenvx encrypt -f .env.repo_name` |
+| Run with secrets | `dotenvx run -f .env.repo_name -- <command>` |
+| Decrypt (view) | `dotenvx decrypt -f .env.repo_name` |
+| Add to existing | Edit file, then `dotenvx encrypt -f .env.repo_name` |
 | Setup global keys | `mkdir -p ~/.dotenvx && touch ~/.dotenvx/keys && chmod 600 ~/.dotenvx/keys` |
-| Add key globally | `echo 'export DOTENV_PRIVATE_KEY_X="..."' >> ~/.dotenvx/keys` |
+| Add key globally | `echo 'export DOTENV_PRIVATE_KEY_REPO_NAME="..."' >> ~/.dotenvx/keys` |
 
-## Example: Adding Secrets to a New Project
+## Example: Adding Secrets to a Repo
 
-When user says "I need to add Supabase secrets to my vibetracking project":
+When user says "I need to add Supabase secrets" (assuming they're in the `relens-ai` repo):
 
 **Respond with:**
 
-> I'll guide you through adding encrypted secrets. Run these commands yourself (I won't ask for the actual values):
+> I'll guide you through adding encrypted secrets to the `relens-ai` repo. Run these commands yourself (I won't ask for the actual values):
 >
 > **Step 1:** Create your env file with real values:
 > ```bash
-> cat > .env.vibetracking << 'EOF'
+> cat > .env.relens_ai << 'EOF'
 > NEXT_PUBLIC_SUPABASE_URL="YOUR_ACTUAL_URL_HERE"
 > NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_ACTUAL_KEY_HERE"
 > EOF
@@ -188,7 +219,7 @@ When user says "I need to add Supabase secrets to my vibetracking project":
 >
 > **Step 2:** Encrypt it:
 > ```bash
-> dotenvx encrypt -f .env.vibetracking
+> dotenvx encrypt -f .env.relens_ai
 > ```
 >
 > **Step 3:** Add the key to your global keys file:
@@ -197,7 +228,7 @@ When user says "I need to add Supabase secrets to my vibetracking project":
 > cat .env.keys
 >
 > # Add to global keys (replace with actual key from above)
-> echo 'export DOTENV_PRIVATE_KEY_VIBETRACKING="your-key-here"' >> ~/.dotenvx/keys
+> echo 'export DOTENV_PRIVATE_KEY_RELENS_AI="your-key-here"' >> ~/.dotenvx/keys
 >
 > # Remove local .env.keys (don't commit it)
 > rm .env.keys
@@ -205,8 +236,8 @@ When user says "I need to add Supabase secrets to my vibetracking project":
 >
 > **Step 4:** Commit the encrypted file:
 > ```bash
-> git add .env.vibetracking
-> git commit -m "Add encrypted vibetracking secrets"
+> git add .env.relens_ai
+> git commit -m "Add encrypted relens_ai secrets"
 > ```
 >
 > Let me know when you've run these and I'll help verify it worked!
