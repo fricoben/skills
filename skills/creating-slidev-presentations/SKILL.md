@@ -1,7 +1,7 @@
 ---
 name: creating-slidev-presentations
 description: >
-  Use when creating Slidev presentations using Bun and the local CLI. Trigger terms: slidev, sli.dev, markdown slides, slide deck, presentation, slides.
+  Use when creating Slidev presentations using Bun and the local CLI. Trigger terms: slidev, sli.dev, markdown slides, slide deck, presentation, slides, mermaid diagrams.
 ---
 
 # Creating Slidev Presentations
@@ -78,6 +78,44 @@ Follow the ReLens palette from `references/relens-style.md`:
 ```bash
 bun slidev presentation/<topic>.md
 ```
+
+## Mermaid Diagrams
+
+Mermaid is built-in to Slidev. Use fenced code blocks with `mermaid` language:
+
+~~~md
+```mermaid
+graph TD
+  A[Start] --> B{Decision}
+  B -->|Yes| C[Result 1]
+  B -->|No| D[Result 2]
+```
+~~~
+
+### Custom Mermaid Theme (optional)
+
+To customize Mermaid appearance, create `setup/mermaid.ts`:
+
+```typescript
+import { defineMermaidSetup } from '@slidev/types'
+
+export default defineMermaidSetup(() => {
+  return {
+    theme: 'neutral',
+  }
+})
+```
+
+### Per-diagram Options
+
+Pass options inline for individual diagrams:
+
+~~~md
+```mermaid {theme: 'forest', scale: 0.8}
+sequenceDiagram
+  Alice->>Bob: Hello
+```
+~~~
 
 ## Available Styles
 
