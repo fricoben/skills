@@ -9,6 +9,15 @@ description: >
 
 Audit a repository to assess readiness for agent-native development and produce an actionable report.
 
+## Philosophy
+
+Agent-native codebases should be **runtime-agnostic**—designed to work with any AI coding agent (Claude Code, Codex, Cursor, Aider, etc.) rather than locked to a single tool. Key principles:
+
+1. **Canonical skill definitions** synced to multiple runtimes
+2. **Shared MCP server configurations** deployable across tools
+3. **Documentation-first context** that any agent can consume
+4. **Environment variable substitution** for secrets across deployments
+
 ## Process
 
 1. Read the detailed checklist in `references/audit-checklist.md`
@@ -31,7 +40,7 @@ Audit a repository to assess readiness for agent-native development and produce 
 - [ ] [specific action]
 - [ ] ...
 
-## 2. Skills, Commands & Agent Interoperability
+## 2. Skills & Runtime Portability
 **Rating:** 🔴/🟡/🟢
 **Current State:** [what exists]
 **Gaps:** [what's missing]
@@ -47,7 +56,7 @@ Audit a repository to assess readiness for agent-native development and produce 
 - [ ] [specific action]
 - [ ] ...
 
-## 4. Code Structure (Monorepo)
+## 4. Code Structure & Multi-Agent Readiness
 **Rating:** 🔴/🟡/🟢
 **Package Map:** [table/list of packages]
 **Coupling Analysis:** [tightly coupled packages]
