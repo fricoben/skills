@@ -9,7 +9,7 @@ What it does:
 
 Run:
 ```bash
-python3 bin/revolut-accounting-sync.py
+python3 workflows/revolut-accounting-sync.py
 ```
 
 State file:

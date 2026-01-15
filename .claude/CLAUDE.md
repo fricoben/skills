@@ -29,12 +29,35 @@ Or sync a specific skill:
 python3 bin/sync-skills.py --only media-compression
 ```
 
+## Syncing Commands
+
+Sync commands to Claude Code and Codex:
+
+```bash
+python3 bin/sync-commands.py
+```
+
+## Directory Structure
+
+```
+skills/           # Skill definitions (synced to ~/.claude/skills/ and ~/.codex/skills/)
+commands/         # Claude Code commands (synced to ~/.claude/commands/)
+workflows/        # Workflow scripts invoked by commands
+mcp/              # MCP server configurations
+bin/              # Sync and validation utilities
+```
+
 ## Key Files
 
-- `mcp/servers.json` - Canonical MCP server definitions (syncs to Claude Code and Codex)
-- `bin/sync-mcp.py` - Deploys MCP configs to `~/.claude.json` and `~/.codex/config.toml`
-- `bin/sync-skills.py` - Deploys skills to `~/.claude/skills/` and `~/.codex/skills/`
 - `skills/*/SKILL.md` - Individual skill definitions
+- `commands/*.md` - Claude Code commands (invoked as /command-name)
+- `workflows/*.py` - Workflow scripts for complex multi-step tasks
+- `mcp/servers.json` - MCP server definitions
+- `bin/sync-skills.py` - Deploys skills to `~/.claude/skills/` and `~/.codex/skills/`
+- `bin/sync-commands.py` - Deploys commands to `~/.claude/commands/` and `~/.codex/prompts/`
+- `bin/sync-mcp.py` - Deploys MCP configs to `~/.claude.json` and `~/.codex/config.toml`
+- `bin/validate-skills.py` - Validates skill frontmatter, size, and security
+- `bin/new-skill.py` - Creates a new skill from template
 
 ## Managing Secrets with dotenvx
 
