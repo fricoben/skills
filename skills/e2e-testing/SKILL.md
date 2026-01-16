@@ -6,6 +6,17 @@ description: >
   functional testing, integration testing, responsive, mobile testing.
 ---
 
+## Browser Automation: Local vs Cloud
+
+This skill supports two browser automation approaches:
+
+| Environment | Tool | When to Use |
+|-------------|------|-------------|
+| **Local development** | Playwright MCP | Default. Use `mcp__playwright__*` tools |
+| **Cloud/Serverless** | Cloud-native browser (e.g., Cloudflare Browser Rendering, Browserless) | When running in Cloudflare Workers, Vercel Edge, or other serverless environments |
+
+**Cloud-native browser**: If the project uses Cloudflare Workers or similar serverless platforms, do NOT use Playwright MCP. Instead, use the cloud-native browser API provided by the platform (e.g., `@cloudflare/puppeteer` for Cloudflare). Check the project's dependencies and deployment target to determine which approach to use.
+
 ## When to Use
 - Testing web application features through the UI
 - Verifying user flows work correctly (login, forms, navigation)

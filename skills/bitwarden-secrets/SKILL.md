@@ -22,13 +22,22 @@ description: >
 - Simple local-only secrets that don't need centralized management
 - One-time passwords or TOTP codes (use Bitwarden Password Manager)
 
-## Primary Use Case: User Simulation with Playwright MCP
+## Primary Use Case: User Simulation with Browser Automation
 
-This skill is designed to work alongside **Playwright MCP** and other testing tools to enable realistic user simulation. The workflow is:
+This skill is designed to work alongside browser automation tools to enable realistic user simulation. The workflow is:
 
 1. **Retrieve credentials** from Bitwarden Secrets Manager (email, password, API keys)
-2. **Use Playwright MCP** to automate browser interactions with those credentials
+2. **Use browser automation** to interact with those credentials
 3. **Simulate real user flows** (login, form submission, authenticated actions)
+
+### Browser Automation: Local vs Cloud
+
+| Environment | Tool | Notes |
+|-------------|------|-------|
+| **Local development** | Playwright MCP | Use `mcp__playwright__*` tools |
+| **Cloud/Serverless** | Cloud-native browser | Use platform's browser API (e.g., `@cloudflare/puppeteer` for Cloudflare Workers) |
+
+**Important**: If the project runs on Cloudflare Workers or similar serverless platforms, do NOT use Playwright MCP. Use the cloud-native browser API instead.
 
 ### Example: Login Flow Simulation
 
@@ -49,7 +58,8 @@ PASSWORD=$(bws secret get <PASSWORD_SECRET_ID> -o json | jq -r '.value')
 
 | Project Tool | Integration |
 |--------------|-------------|
-| **Playwright MCP** | Use retrieved credentials to fill login forms, authenticate users |
+| **Playwright MCP** (local) | Use retrieved credentials to fill login forms, authenticate users |
+| **Cloud-native browser** (serverless) | Same workflow, using platform's browser API |
 | **Supabase MCP** | Retrieve service keys, connection strings for database operations |
 | **API Testing** | Inject API keys into request headers |
 | **E2E Tests** | Provide test user credentials for authenticated flows |
@@ -244,7 +254,7 @@ When user says "I need to set up Bitwarden secrets for my vibetracking project":
 - Machine accounts have scoped access - verify project permissions
 - Rate limits apply when making many requests from same IP
 
-## Agent Workflow: Using Credentials with Playwright MCP
+## Agent Workflow: Using Credentials with Browser Automation
 
 When the agent needs to simulate a user login or authenticated action:
 
@@ -255,15 +265,18 @@ The agent runs bws commands to get the credentials into environment variables:
 bws secret get <SECRET_ID> -o json | jq -r '.value'
 ```
 
-### Step 2: Use Playwright MCP Tools
-With credentials retrieved, the agent uses Playwright MCP tools:
+### Step 2: Use Browser Automation Tools
 
+**For local development (Playwright MCP)**:
 1. `browser_navigate` - Go to login page
 2. `browser_snapshot` - Get page structure and element refs
 3. `browser_type` - Fill email/username field with retrieved credential
 4. `browser_type` - Fill password field with retrieved credential
 5. `browser_click` - Click login/submit button
 6. `browser_snapshot` - Verify authenticated state
+
+**For cloud/serverless (Cloud-native browser)**:
+Use the platform's browser API (e.g., `@cloudflare/puppeteer`) with equivalent operations. The workflow is the same, but the API differs.
 
 ### Step 3: Continue Authenticated Flow
 Once logged in, the agent can:
@@ -272,7 +285,7 @@ Once logged in, the agent can:
 - Test user-specific features
 - Verify permissions and access
 
-### Example: Complete Login Simulation
+### Example: Complete Login Simulation (Playwright MCP)
 
 ```
 Agent retrieves: EMAIL=user@example.com, PASSWORD=***
