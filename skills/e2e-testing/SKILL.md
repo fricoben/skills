@@ -1,21 +1,20 @@
 ---
 name: e2e-testing
 description: >
-  End-to-end testing skill for web applications using Playwright MCP.
+  End-to-end testing skill for web applications using agent-browser CLI.
   Trigger terms: e2e, end-to-end, playwright, test, testing, UI testing,
   functional testing, integration testing, responsive, mobile testing.
 ---
 
-## Browser Automation: Local vs Cloud
+## Browser Automation Tool
 
-This skill supports two browser automation approaches:
+This skill uses **agent-browser** CLI for all browser automation. Do NOT use Playwright MCP tools.
 
-| Environment | Tool | When to Use |
-|-------------|------|-------------|
-| **Local development** | Playwright MCP | Default. Use `mcp__playwright__*` tools |
-| **Cloud/Serverless** | Cloud-native browser (e.g., Cloudflare Browser Rendering, Browserless) | When running in Cloudflare Workers, Vercel Edge, or other serverless environments |
+| Tool | Usage |
+|------|-------|
+| **agent-browser** | CLI-based browser automation. Use `agent-browser <command>` |
 
-**Cloud-native browser**: If the project uses Cloudflare Workers or similar serverless platforms, do NOT use Playwright MCP. Instead, use the cloud-native browser API provided by the platform (e.g., `@cloudflare/puppeteer` for Cloudflare). Check the project's dependencies and deployment target to determine which approach to use.
+For cloud/serverless environments (Cloudflare Workers, Vercel Edge), use the platform's native browser API (e.g., `@cloudflare/puppeteer`).
 
 ## When to Use
 - Testing web application features through the UI
@@ -50,11 +49,18 @@ If app URL not provided, ask for it. Determine if testing:
 - The entire application (default)
 
 ### 2. Initial Exploration
-```
-1. Navigate to the app URL using browser_navigate
-2. Take a snapshot using browser_snapshot to understand page structure
-3. Check browser_console_messages for any initial errors
-4. Identify all interactive elements: links, buttons, forms, inputs
+```bash
+# Navigate to the app
+agent-browser open <url>
+
+# Get page structure with element refs
+agent-browser snapshot -i
+
+# Check for JavaScript errors
+agent-browser errors
+
+# Identify interactive elements
+agent-browser snapshot
 ```
 
 ### 3. Create Test Plan
@@ -70,16 +76,29 @@ If app URL not provided, ask for it. Determine if testing:
 
 ### 4. Execute Tests
 For each test case:
-```
-1. Announce: "Testing: [description of what we're testing]"
-2. Perform action using Playwright MCP tools:
-   - browser_click for clicking elements
-   - browser_type or browser_fill_form for input
-   - browser_navigate for page transitions
-3. Wait if needed using browser_wait_for
-4. Take snapshot to verify expected state
-5. If failure: take screenshot with browser_take_screenshot
-6. Log result: PASS or FAIL with details
+```bash
+# 1. Announce: "Testing: [description]"
+
+# 2. Take snapshot to get current element refs
+agent-browser snapshot -i
+
+# 3. Perform actions
+agent-browser click @e1              # Click element
+agent-browser fill @e2 "text"        # Fill input
+agent-browser press Enter            # Submit form
+agent-browser open <new-url>         # Navigate
+
+# 4. Wait if needed
+agent-browser wait 1000              # Wait 1 second
+agent-browser wait ".selector"       # Wait for element
+
+# 5. Verify expected state
+agent-browser snapshot -i
+
+# 6. If failure: take screenshot
+agent-browser screenshot failure-name.png
+
+# 7. Log result: PASS or FAIL with details
 ```
 
 **Test Categories** (see references/test-categories.md):
@@ -92,19 +111,39 @@ For each test case:
 ### 5. Responsive Testing
 For each breakpoint (see references/responsive-breakpoints.md):
 
-```
-1. Resize browser using browser_resize:
-   - Mobile: 375x667
-   - Tablet: 768x1024
-   - Desktop: 1280x800
+```bash
+# Set viewport size
+agent-browser set viewport 375 667   # Mobile
+agent-browser set viewport 768 1024  # Tablet
+agent-browser set viewport 1280 800  # Desktop
 
-2. Navigate to key pages
-3. Take snapshot to verify:
-   - Layout doesn't break
-   - Navigation is accessible
-   - No horizontal scroll
-   - Text is readable
-4. Check console for errors at each size
+# Or use device presets
+agent-browser set device "iPhone 12"
+agent-browser set device "iPad"
+
+# Navigate to key pages
+agent-browser open <url>
+
+# Take snapshot to verify:
+agent-browser snapshot -i
+# - Layout doesn't break
+# - Navigation is accessible
+# - No horizontal scroll
+# - Text is readable
+
+# Check for overflow issues
+agent-browser eval "(() => {
+  const issues = [];
+  document.querySelectorAll('*').forEach(el => {
+    if (el.scrollWidth > el.clientWidth) {
+      issues.push({tag: el.tagName, class: el.className, issue: 'horizontal-overflow'});
+    }
+  });
+  return JSON.stringify(issues);
+})()"
+
+# Check console for errors
+agent-browser errors
 ```
 
 ### 6. Report Results
@@ -135,25 +174,30 @@ Generate a summary:
 ```
 
 ### 7. Cleanup (CRITICAL)
-**You MUST kill any localhost server you started for testing:**
-```
-1. Close the browser using browser_close
-2. Find and kill any localhost processes you started:
-   - Use: lsof -ti:PORT | xargs kill -9
-   - Or: pkill -f "npm run dev" (or whatever command was used)
-3. Verify the port is free: lsof -i:PORT (should return nothing)
-```
+**You MUST close the browser and kill any servers you started:**
+```bash
+# Close the browser
+agent-browser close
 
-⚠️ **NEVER leave localhost servers running after testing.** This prevents port conflicts for subsequent tests and avoids resource leaks.
+# Find and kill any localhost processes you started
+lsof -ti:PORT | xargs kill -9
+
+# Or kill by process name
+pkill -f "npm run dev"
+
+# Verify the port is free
+lsof -i:PORT  # Should return nothing
+```
 
 ## Checks & Guardrails
 - Always take a snapshot before performing actions to understand current state
-- Use browser_snapshot (accessibility tree) for interaction, browser_take_screenshot for visual evidence
-- Wait for elements/text before interacting (browser_wait_for)
-- Check console messages after each major action
-- Don't assume element refs persist across navigations - take new snapshots
+- Use `snapshot -i` for interaction refs, `screenshot` for visual evidence
+- Wait for elements with `wait <selector>` or `wait <ms>` when content loads async
+- Check `errors` and `console` after each major action
+- Refs (@e1, @e2) are only valid until the page changes - take new snapshots after navigation
+- Always close the browser with `agent-browser close` when done
 
 ## References
-- [Playwright MCP Commands](references/playwright-mcp-commands.md)
+- [agent-browser Commands](references/agent-browser-commands.md)
 - [Test Categories](references/test-categories.md)
 - [Responsive Breakpoints](references/responsive-breakpoints.md)
