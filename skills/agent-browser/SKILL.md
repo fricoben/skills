@@ -17,7 +17,6 @@ description: >
 - When you need deterministic element selection via accessibility refs
 
 ## When NOT to Use
-- When Playwright MCP tools are already available (use those instead)
 - Simple HTTP requests (use curl/fetch instead)
 - When you need real-time browser control with visual feedback
 

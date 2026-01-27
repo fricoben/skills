@@ -9,7 +9,7 @@ description: >
 ---
 
 ## When to Use
-- **User simulation testing**: Retrieving login credentials for Playwright MCP to simulate real user flows
+- **User simulation testing**: Retrieving login credentials for agent-browser to simulate real user flows
 - Retrieving secrets from Bitwarden Secrets Manager for a project
 - Setting up a new project with Bitwarden Secrets Manager
 - Injecting secrets into application runtime via `bws run`
@@ -30,14 +30,14 @@ This skill is designed to work alongside browser automation tools to enable real
 2. **Use browser automation** to interact with those credentials
 3. **Simulate real user flows** (login, form submission, authenticated actions)
 
-### Browser Automation: Local vs Cloud
+### Browser Automation Tool
+
+Use **agent-browser** CLI for all browser automation. Do NOT use Playwright MCP tools.
 
 | Environment | Tool | Notes |
 |-------------|------|-------|
-| **Local development** | Playwright MCP | Use `mcp__playwright__*` tools |
+| **All environments** | agent-browser | Use `agent-browser <command>` CLI |
 | **Cloud/Serverless** | Cloud-native browser | Use platform's browser API (e.g., `@cloudflare/puppeteer` for Cloudflare Workers) |
-
-**Important**: If the project runs on Cloudflare Workers or similar serverless platforms, do NOT use Playwright MCP. Use the cloud-native browser API instead.
 
 ### Example: Login Flow Simulation
 
@@ -46,19 +46,20 @@ This skill is designed to work alongside browser automation tools to enable real
 EMAIL=$(bws secret get <EMAIL_SECRET_ID> -o json | jq -r '.value')
 PASSWORD=$(bws secret get <PASSWORD_SECRET_ID> -o json | jq -r '.value')
 
-# 2. Use with Playwright MCP to:
-#    - Navigate to login page
-#    - Fill email field with $EMAIL
-#    - Fill password field with $PASSWORD
-#    - Click submit
-#    - Verify authenticated state
+# 2. Use with agent-browser to:
+agent-browser open https://app.example.com/login
+agent-browser snapshot -i
+agent-browser fill @e1 "$EMAIL"      # Fill email field
+agent-browser fill @e2 "$PASSWORD"   # Fill password field
+agent-browser click @e3              # Click submit
+agent-browser snapshot -i            # Verify authenticated state
 ```
 
 ### Integration with Project Tools
 
 | Project Tool | Integration |
 |--------------|-------------|
-| **Playwright MCP** (local) | Use retrieved credentials to fill login forms, authenticate users |
+| **agent-browser** | Use retrieved credentials to fill login forms, authenticate users |
 | **Cloud-native browser** (serverless) | Same workflow, using platform's browser API |
 | **Supabase MCP** | Retrieve service keys, connection strings for database operations |
 | **API Testing** | Inject API keys into request headers |
@@ -265,18 +266,25 @@ The agent runs bws commands to get the credentials into environment variables:
 bws secret get <SECRET_ID> -o json | jq -r '.value'
 ```
 
-### Step 2: Use Browser Automation Tools
+### Step 2: Use agent-browser for Automation
 
-**For local development (Playwright MCP)**:
-1. `browser_navigate` - Go to login page
-2. `browser_snapshot` - Get page structure and element refs
-3. `browser_type` - Fill email/username field with retrieved credential
-4. `browser_type` - Fill password field with retrieved credential
-5. `browser_click` - Click login/submit button
-6. `browser_snapshot` - Verify authenticated state
+```bash
+# Navigate to login page
+agent-browser open https://app.example.com/login
 
-**For cloud/serverless (Cloud-native browser)**:
-Use the platform's browser API (e.g., `@cloudflare/puppeteer`) with equivalent operations. The workflow is the same, but the API differs.
+# Get page structure and element refs
+agent-browser snapshot -i
+
+# Fill credentials (using retrieved values)
+agent-browser fill @e1 "<email>"
+agent-browser fill @e2 "<password>"
+
+# Submit
+agent-browser click @e3
+
+# Verify authenticated state
+agent-browser snapshot -i
+```
 
 ### Step 3: Continue Authenticated Flow
 Once logged in, the agent can:
@@ -285,17 +293,17 @@ Once logged in, the agent can:
 - Test user-specific features
 - Verify permissions and access
 
-### Example: Complete Login Simulation (Playwright MCP)
+### Example: Complete Login Simulation
 
 ```
 Agent retrieves: EMAIL=user@example.com, PASSWORD=***
 
-1. browser_navigate: https://app.example.com/login
-2. browser_snapshot: Get form field refs
-3. browser_type: ref="email-input", text=<retrieved email>
-4. browser_type: ref="password-input", text=<retrieved password>
-5. browser_click: ref="login-button"
-6. browser_snapshot: Verify dashboard loaded
+1. agent-browser open https://app.example.com/login
+2. agent-browser snapshot -i  # Get form field refs
+3. agent-browser fill @e1 "<retrieved email>"
+4. agent-browser fill @e2 "<retrieved password>"
+5. agent-browser click @e3  # Login button
+6. agent-browser snapshot -i  # Verify dashboard loaded
 ```
 
 ## References
