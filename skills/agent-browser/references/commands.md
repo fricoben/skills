@@ -8,7 +8,10 @@ Navigate to a URL.
 agent-browser open <url>
 agent-browser open example.com
 agent-browser open https://app.example.com/login
+agent-browser open file:///path/to/local.html
 ```
+Aliases: `goto`, `navigate`. Auto-prepends `https://` if no protocol given.
+Supports: `https://`, `http://`, `file://`, `about:`, `data://`
 
 ### click
 Click an element by ref or CSS selector.
@@ -48,6 +51,14 @@ agent-browser press Escape
 agent-browser press Control+a    # Select all
 agent-browser press Control+c    # Copy
 agent-browser press ArrowDown
+```
+Alias: `key`
+
+### keydown / keyup
+Hold or release a key.
+```bash
+agent-browser keydown Shift
+agent-browser keyup Shift
 ```
 
 ### hover
@@ -103,7 +114,7 @@ agent-browser download @e3 ./downloads/file.pdf
 Scroll the page.
 ```bash
 agent-browser scroll <direction> [pixels]
-agent-browser scroll down
+agent-browser scroll down          # Default: 300px
 agent-browser scroll up 500
 agent-browser scroll left
 agent-browser scroll right 200
@@ -114,14 +125,18 @@ Scroll element into viewport.
 ```bash
 agent-browser scrollintoview @e10
 ```
+Alias: `scrollinto`
 
 ### wait
-Wait for element or time.
+Wait for element, time, or condition.
 ```bash
-agent-browser wait <selector|ms>
-agent-browser wait @e5           # Wait for element
-agent-browser wait "#loading"    # Wait for CSS selector
-agent-browser wait 2000          # Wait 2 seconds
+agent-browser wait @e5                     # Wait for element
+agent-browser wait "#loading"              # Wait for CSS selector
+agent-browser wait 2000                    # Wait 2 seconds
+agent-browser wait --text "Success"        # Wait for text (-t)
+agent-browser wait --url "**/dashboard"    # Wait for URL pattern (-u)
+agent-browser wait --load networkidle      # Wait for network idle (-l)
+agent-browser wait --fn "window.ready"     # Wait for JS condition (-f)
 ```
 
 ### screenshot
@@ -166,6 +181,14 @@ Close the browser.
 ```bash
 agent-browser close
 ```
+Aliases: `quit`, `exit`
+
+### connect
+Connect to an existing browser via CDP.
+```bash
+agent-browser connect 9222
+agent-browser connect ws://localhost:9222/devtools/browser/...
+```
 
 ## Mouse Commands
 
@@ -183,8 +206,38 @@ agent-browser mouse wheel <dy> [dx]    # Scroll wheel
 agent-browser tab              # Show current tab
 agent-browser tab list         # List all tabs
 agent-browser tab new          # Create new tab
+agent-browser tab new <url>    # Create new tab with URL
 agent-browser tab close        # Close current tab
+agent-browser tab close 2      # Close tab by index
 agent-browser tab 2            # Switch to tab 2
+```
+
+## Window Management
+
+```bash
+agent-browser window new       # Open new window
+```
+
+## Frame Management
+
+```bash
+agent-browser frame "#iframe"  # Switch to iframe
+agent-browser frame main       # Back to main frame
+```
+
+## Dialog Handling
+
+```bash
+agent-browser dialog accept          # Accept dialog
+agent-browser dialog accept "text"   # Accept with input text
+agent-browser dialog dismiss         # Dismiss dialog
+```
+
+## State Management
+
+```bash
+agent-browser state save auth.json   # Save cookies/storage state
+agent-browser state load auth.json   # Load saved state
 ```
 
 ## Find Command Locators
@@ -214,4 +267,18 @@ agent-browser tab 2            # Switch to tab 2
 agent-browser is visible @e1     # Check visibility
 agent-browser is enabled @e3     # Check if enabled
 agent-browser is checked @e5     # Check checkbox state
+```
+
+## Get Information Commands
+
+```bash
+agent-browser get text @e1          # Text content
+agent-browser get html @e1          # Inner HTML
+agent-browser get value @e3         # Input value
+agent-browser get attr @e1 href     # Attribute value
+agent-browser get title             # Page title
+agent-browser get url               # Current URL
+agent-browser get count ".item"     # Count matching elements
+agent-browser get box @e1           # Bounding box
+agent-browser get styles @e1        # Computed styles
 ```

@@ -43,7 +43,12 @@ agent-browser record start video.webm
 agent-browser record start video.webm https://example.com  # Start with URL
 # ... perform actions ...
 agent-browser record stop
+agent-browser record restart ./take2.webm  # Stop current + start new
 ```
+
+Recording creates a fresh context but preserves cookies/storage from your session.
+If no URL is provided, it automatically returns to your current page.
+For smooth demos, explore first, then start recording.
 
 ## Debug Mode
 
@@ -107,6 +112,13 @@ Load cookies and storage from a JSON file.
 agent-browser --state auth-state.json open example.com
 ```
 
+## Save and Restore State
+
+```bash
+agent-browser state save auth.json   # Save current cookies/storage
+agent-browser state load auth.json   # Load saved state into session
+```
+
 ## Environment Variables
 
 | Variable | Description |
@@ -121,6 +133,8 @@ agent-browser --state auth-state.json open example.com
 | `AGENT_BROWSER_PROXY_BYPASS` | Hosts to bypass proxy |
 | `AGENT_BROWSER_PROFILE` | Persistent profile path |
 | `AGENT_BROWSER_STATE` | Storage state file path |
+| `AGENT_BROWSER_HOME` | Custom install location |
+| `AGENT_BROWSER_EXTENSIONS` | Comma-separated extension paths |
 
 ## Browser Installation
 
@@ -150,4 +164,11 @@ agent-browser --extension ext1 --extension ext2 open example.com
 Pass custom args to browser.
 ```bash
 agent-browser --args "--no-sandbox,--disable-blink-features=AutomationControlled" open example.com
+```
+
+## HTTPS Certificate Errors
+
+For sites with self-signed or invalid certificates:
+```bash
+agent-browser open https://localhost:8443 --ignore-https-errors
 ```

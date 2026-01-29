@@ -108,6 +108,7 @@ agent-browser --headers '{"Authorization": "Bearer token"}' open app.example.com
 agent-browser set credentials <username> <password>
 agent-browser set credentials admin secret123
 ```
+Alias: `set auth`
 
 ## Proxy Configuration
 
@@ -115,10 +116,12 @@ agent-browser set credentials admin secret123
 # Via command option
 agent-browser --proxy "http://127.0.0.1:7890" open example.com
 agent-browser --proxy "http://user:pass@127.0.0.1:7890" open example.com
+agent-browser --proxy "socks5://proxy.com:1080" open example.com
 
 # Bypass proxy for hosts
 agent-browser --proxy-bypass "localhost,*.internal.com" open example.com
 
 # Via environment variable
 AGENT_BROWSER_PROXY="http://127.0.0.1:7890" agent-browser open example.com
+AGENT_BROWSER_PROXY_BYPASS="localhost" agent-browser open example.com
 ```
