@@ -4,7 +4,13 @@ Canonical repository for reusable agent skills, commands, and MCP server configu
 
 ## Skills (managed by Vercel `skills` CLI)
 
-### Sync all skills to installed agents
+### Install all skills (for consumers)
+
+```bash
+npx skills add fricoben/skills --all -g -y
+```
+
+### Sync all skills locally (for maintainers)
 
 ```bash
 npx skills add ./skills -g --all -y

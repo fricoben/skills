@@ -1,33 +1,60 @@
 # agent-skills
 
-Canonical repository for reusable agent skills, MCP servers, and custom commands.
-Skills are distributed using the [Vercel `skills` CLI](https://github.com/vercel-labs/skills) to all installed agents (Claude Code, Codex, Cursor, and 30+ others).
+A curated pack of 20 agent skills for Claude Code, Codex, Cursor, and 30+ other AI agents. Distributed via the [Vercel `skills` CLI](https://github.com/vercel-labs/skills).
 
-## Quick Start
-
-```bash
-# Sync skills to all installed agents
-npx skills add ./skills -g --all -y
-
-# Sync commands and MCP servers
-python3 bin/sync-commands.py
-python3 bin/sync-mcp.py
-```
-
-## Adding a Skill from the Ecosystem
+## Install all skills
 
 ```bash
-bin/add-skill.sh vercel-labs/agent-skills
+npx skills add fricoben/skills --all -g -y
 ```
 
-This installs the skill to all detected agents AND saves it into this repo's `skills/` directory.
+Install a single skill:
 
-## Creating a New Skill
+```bash
+npx skills add fricoben/skills --skill pdf -g -y
+```
 
-Use the `skill-creator` skill: ask your agent to create a new skill in `skills/<name>/SKILL.md`.
-Or use `npx skills init <name>` for a minimal scaffold.
+Preview available skills before installing:
 
-## Repository Layout
+```bash
+npx skills add fricoben/skills --list
+```
+
+## Available Skills
+
+| Skill | Description |
+|-------|-------------|
+| agent-browser | Headless browser automation with Playwright for web scraping, form filling, and testing |
+| atomic-design | Front-end component architecture separating pure UI from data-connected components |
+| bitwarden-secrets | Manage and retrieve secrets from Bitwarden Secrets Manager via bws CLI |
+| code-review-excellence | Code review practices for constructive feedback, catching bugs, and knowledge sharing |
+| copywriting | Write and improve marketing copy for landing pages, pricing pages, and CTAs |
+| docx | Create, edit, and analyze Word documents with tracked changes and formatting |
+| dotenvx-secrets | Manage encrypted environment variables using dotenvx vault |
+| e2e-testing | End-to-end testing for web applications using agent-browser CLI |
+| find-skills | Discover and install agent skills from the open ecosystem |
+| media-compression | Compress images and videos using FFmpeg |
+| mermaid-diagrams | Create software diagrams (class, sequence, flowchart, ERD, C4, state) using Mermaid |
+| pdf | Extract text, create, merge, split, and fill forms in PDF documents |
+| pptx | Create, edit, and analyze PowerPoint presentations with layouts and speaker notes |
+| proton-bridge | Read, organize, and send Proton Mail via local IMAP/SMTP bridge |
+| remotion-best-practices | Best practices for Remotion video creation in React |
+| seo-audit | Audit and diagnose technical SEO issues with actionable recommendations |
+| skill-creator | Guide for creating and updating agent skills |
+| vercel-react-best-practices | React and Next.js performance optimization from Vercel Engineering |
+| web-design-guidelines | Review UI code for Web Interface Guidelines and accessibility compliance |
+| xlsx | Create, edit, and analyze spreadsheets with formulas, formatting, and visualization |
+
+## Requirements
+
+- Node.js (for `npx`)
+- A compatible AI agent (Claude Code, Codex, Cursor, and [30+ others](https://github.com/vercel-labs/skills))
+
+---
+
+## Contributing
+
+### Repository Layout
 
 ```
 ├── skills/           # Reusable agent skills (SKILL.md + references)
@@ -37,7 +64,26 @@ Or use `npx skills init <name>` for a minimal scaffold.
 └── bin/              # Utility scripts
 ```
 
-## Syncing MCP Servers
+### Syncing Skills Locally
+
+```bash
+npx skills add ./skills -g --all -y
+```
+
+### Adding a Skill from the Ecosystem
+
+```bash
+bin/add-skill.sh vercel-labs/agent-skills
+```
+
+This installs the skill to all detected agents AND saves it into this repo's `skills/` directory.
+
+### Creating a New Skill
+
+Use the `skill-creator` skill: ask your agent to create a new skill in `skills/<name>/SKILL.md`.
+Or use `npx skills init <name>` for a minimal scaffold.
+
+### Syncing MCP Servers
 
 MCP servers are defined once in `mcp/servers.json` and synced to both tools.
 
@@ -52,7 +98,7 @@ python3 bin/sync-mcp.py --codex-only
 - Claude Code: `~/.claude.json` → `mcpServers`
 - Codex: `~/.codex/config.toml` → `[mcp_servers.*]`
 
-## Syncing Commands
+### Syncing Commands
 
 Custom commands are defined in `commands/` and synced to both tools.
 
@@ -66,11 +112,11 @@ python3 bin/sync-commands.py --prune      # Remove orphaned commands
 - Claude Code: `~/.claude/commands/` (invoked as `/command-name`)
 - Codex: `~/.codex/prompts/` (invoked as `/prompts:command-name`)
 
-## Placeholder Substitution
+### Placeholder Substitution
 
 Skills can use `${VAR_NAME}` placeholders for secrets. The Vercel CLI copies files verbatim without substitution, so set environment variables directly for agents to read at runtime, or use dotenvx to inject them before syncing.
 
-## Validation
+### Validation
 
 ```bash
 python3 bin/validate-skills.py
