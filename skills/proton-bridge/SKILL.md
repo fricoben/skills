@@ -5,7 +5,8 @@ description: >
   Proton Mail from scripts or email clients. Trigger terms: proton bridge,
   proton mail bridge, IMAP, SMTP, local email management, archive, spam, reply,
   inbox, mailbox details.
-internal: true
+metadata:
+  internal: true
 ---
 
 ## When to Use

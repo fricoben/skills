@@ -66,6 +66,10 @@ python3 bin/sync-commands.py --prune      # Remove orphaned commands
 - Claude Code: `~/.claude/commands/` (invoked as `/command-name`)
 - Codex: `~/.codex/prompts/` (invoked as `/prompts:command-name`)
 
+## Placeholder Substitution
+
+Skills can use `${VAR_NAME}` placeholders for secrets. The Vercel CLI copies files verbatim without substitution, so set environment variables directly for agents to read at runtime, or use dotenvx to inject them before syncing.
+
 ## Validation
 
 ```bash

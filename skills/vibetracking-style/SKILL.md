@@ -5,7 +5,8 @@ description: >
   system including colors, typography, buttons, cards, and illustration style.
   Trigger terms: vibe tracking, vibetracking, vibe-tracking, style guide,
   design system, UI style, front-end style, color palette, typography.
-internal: true
+metadata:
+  internal: true
 ---
 
 ## Overview
