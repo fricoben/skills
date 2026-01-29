@@ -5,6 +5,8 @@ description: >
   Proton Mail from scripts or email clients. Trigger terms: proton bridge,
   proton mail bridge, IMAP, SMTP, local email management, archive, spam, reply,
   inbox, mailbox details.
+metadata:
+  internal: true
 ---
 
 ## When to Use
@@ -22,7 +24,7 @@ description: >
 {
   "imap": { "host": "127.0.0.1", "port": 1143, "security": "STARTTLS" },
   "smtp": { "host": "127.0.0.1", "port": 1025, "security": "SSL" },
-  "password": "x6O23l3NEW1au2VoHW3dgQ",
+  "password": "${PROTON_BRIDGE_PASSWORD}",
   "accounts": [
     { "username": "ben@lfglabs.dev", "from": "ben@lfglabs.dev" },
     { "username": "ben@starknet.id", "from": "ben@starknet.id" }
@@ -42,7 +44,7 @@ CREDS = {
     "host": "127.0.0.1",
     "port": 1143,
     "security": "STARTTLS",
-    "password": "x6O23l3NEW1au2VoHW3dgQ",
+    "password": "${PROTON_BRIDGE_PASSWORD}",
     "accounts": [
         {"username": "ben@lfglabs.dev"},
         {"username": "ben@starknet.id"},
@@ -93,7 +95,7 @@ from email.message import EmailMessage
 SMTP = {
     "host": "127.0.0.1",
     "port": 1025,
-    "password": "x6O23l3NEW1au2VoHW3dgQ",
+    "password": "${PROTON_BRIDGE_PASSWORD}",
     "accounts": [
         {"username": "ben@lfglabs.dev", "from": "ben@lfglabs.dev"},
         {"username": "ben@starknet.id", "from": "ben@starknet.id"},

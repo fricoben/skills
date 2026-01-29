@@ -249,5 +249,8 @@ $RECYCLE.BIN/
 # Conductor workspace context
 .context/
 
+# Vercel skills CLI canonical directory
+.agents/
+
 # Playwright MCP generated files
 .playwright-mcp/

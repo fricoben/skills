@@ -69,13 +69,30 @@ def parse_frontmatter(text: str) -> Dict[str, str]:
     block = lines[1:end_idx]
     data: Dict[str, str] = {}
     i = 0
+    current_map_key: str | None = None
     while i < len(block):
         line = block[i]
         if not line.strip():
             i += 1
+            current_map_key = None
             continue
+        # Indented line: either a block scalar continuation or a nested map entry
         if line.startswith(" ") or line.startswith("\t"):
+            if current_map_key is not None and ":" in line:
+                # One-level nested key: e.g. "  internal: true" under "metadata:"
+                sub_key, sub_rest = line.strip().split(":", 1)
+                sub_key = sub_key.strip()
+                sub_value = sub_rest.strip()
+                if sub_value and len(sub_value) >= 2:
+                    if (sub_value.startswith('"') and sub_value.endswith('"')) or (
+                        sub_value.startswith("'") and sub_value.endswith("'")
+                    ):
+                        sub_value = sub_value[1:-1]
+                data[f"{current_map_key}.{sub_key}"] = sub_value
+                i += 1
+                continue
             raise FrontmatterError(f"unexpected indentation at line {i + 2}")
+        current_map_key = None
         if ":" not in line:
             raise FrontmatterError(f"invalid frontmatter line: {line}")
         key, rest = line.split(":", 1)
@@ -98,6 +115,11 @@ def parse_frontmatter(text: str) -> Dict[str, str]:
             data[key] = value.strip()
             continue
         value = rest.strip()
+        if not value:
+            # Empty value after colon: this is a map key (e.g. "metadata:")
+            current_map_key = key
+            i += 1
+            continue
         if len(value) >= 2:
             if (value.startswith('"') and value.endswith('"')) or (
                 value.startswith("'") and value.endswith("'")

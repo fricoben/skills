@@ -1,38 +1,31 @@
 # Agent Skills Repository
 
-This is the canonical repository for reusable agent skills.
+Canonical repository for reusable agent skills.
 
-## Syncing Skills
+## Skills (managed by Vercel `skills` CLI)
 
-Before syncing skills with secrets, copy the private key:
+Sync all skills to installed agents:
 
 ```bash
-cp ~/work/skills/.env.keys .env.keys
+npx skills add ./skills -g --all -y
 ```
 
-Then sync with dotenvx:
+Add a skill from the ecosystem (installs + saves to repo):
 
 ```bash
-dotenvx run -- python3 bin/sync-skills.py
+bin/add-skill.sh vercel-labs/agent-skills
 ```
 
-Or sync a specific skill:
+## Commands
 
 ```bash
-dotenvx run -- python3 bin/sync-skills.py --only media-creation
+python3 bin/sync-commands.py
 ```
 
 ## Key Files
 
-- `.env` - Encrypted secrets (committed)
-- `.env.keys` - Private decryption key (copy from `~/work/skills/.env.keys`, gitignored)
-- `bin/sync-skills.py` - Deploys skills to `~/.claude/skills/` and `~/.codex/skills/`
-
-## Placeholder Substitution
-
-Skills can use `${VAR_NAME}` placeholders in markdown files. These are replaced with actual values from environment variables during sync.
-
-Available secrets:
-- `${OPENAI_API_KEY}` - OpenAI API key
-- `${GOOGLE_GENAI_API_KEY}` - Google Gemini API key
-- `${DASHSCOPE_API_KEY}` - Alibaba DashScope API key
+- `skills/*/SKILL.md` - Skill definitions
+- `commands/*.md` - Slash commands
+- `mcp/servers.json` - MCP server definitions
+- `bin/add-skill.sh` - Add a skill from the ecosystem and save to repo
+- `bin/validate-skills.py` - Validate skill frontmatter, size, and security

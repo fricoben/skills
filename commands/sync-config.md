@@ -1,6 +1,6 @@
-Sync all configuration (skills, commands, and MCP servers) to Claude Code and Codex. Run all sync scripts from the bin/ directory:
+Sync all configuration (skills, commands, and MCP servers) to all installed agents.
 
-1. Sync skills: `python3 bin/sync-skills.py`
+1. Sync skills: `npx skills add ./skills -g --all -y`
 2. Sync commands: `python3 bin/sync-commands.py`
 3. Sync MCP servers: `python3 bin/sync-mcp.py`
 
