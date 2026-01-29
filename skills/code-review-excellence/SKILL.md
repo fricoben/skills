@@ -1,6 +1,11 @@
 ---
 name: code-review-excellence
-description: Master effective code review practices to provide constructive feedback, catch bugs early, and foster knowledge sharing while maintaining team morale. Use when reviewing pull requests, establishing review standards, or mentoring developers. Trigger terms: code review, pull request review, PR review, review feedback, review standards, constructive feedback.
+description: >
+  Master effective code review practices to provide constructive feedback,
+  catch bugs early, and foster knowledge sharing while maintaining team morale.
+  Use when reviewing pull requests, establishing review standards, or mentoring
+  developers. Trigger terms: code review, pull request review, PR review,
+  review feedback, review standards, constructive feedback.
 ---
 
 # Code Review Excellence

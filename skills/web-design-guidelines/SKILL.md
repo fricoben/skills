@@ -1,6 +1,11 @@
 ---
 name: web-design-guidelines
-description: Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices". Trigger terms: web design, UI review, accessibility, design audit, UX review, web guidelines, interface design.
+description: >
+  Review UI code for Web Interface Guidelines compliance. Use when asked to
+  "review my UI", "check accessibility", "audit design", "review UX", or
+  "check my site against best practices". Trigger terms: web design, UI
+  review, accessibility, design audit, UX review, web guidelines, interface
+  design.
 metadata:
   author: vercel
   version: "1.0.0"

@@ -1,7 +1,12 @@
 ---
 name: copywriting
-version: 1.0.0
-description: When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says "write copy for," "improve this copy," "rewrite this page," "marketing copy," "headline help," or "CTA copy." Trigger terms: copywriting, marketing copy, landing page copy, headline, CTA, write copy, rewrite copy, page copy.
+description: >
+  When the user wants to write, rewrite, or improve marketing copy for any
+  page — including homepage, landing pages, pricing pages, feature pages,
+  about pages, or product pages. Also use when the user says "write copy for,"
+  "improve this copy," "rewrite this page," "marketing copy," "headline help,"
+  or "CTA copy." Trigger terms: copywriting, marketing copy, landing page copy,
+  headline, CTA, write copy, rewrite copy, page copy.
 ---
 
 # Copywriting
