@@ -106,7 +106,7 @@ dotenvx set NEXT_PUBLIC_SUPABASE_ANON_KEY "your-anon-key-here" -f .env.relens_ai
 
 Each `set` call creates the file if it doesn't exist, encrypts the value, and updates `.env.keys` with the private key.
 
-### 5. Store Keys Globally (Recommended)
+### 4. Store Keys Globally (Recommended)
 
 The encryption creates/updates `.env.keys` with a private key like:
 ```
@@ -159,7 +159,7 @@ The global approach means:
 - Keys survive workspace archiving/deletion
 - Works across all projects on your machine
 
-### 6. Use in Applications
+### 5. Use in Applications
 
 Run any command with decrypted environment:
 ```bash
@@ -167,7 +167,7 @@ dotenvx run -f .env.relens_ai -- npm run dev
 dotenvx run -f .env.relens_ai -- python main.py
 ```
 
-### 7. Share Across Machines
+### 6. Share Across Machines
 
 To use on another machine:
 1. Clone the repo (includes encrypted `.env.relens_ai`)
