@@ -103,12 +103,6 @@ dotenvx run -f .env.relens_ai -- npm run build
 
 ### Adding new secret
 ```bash
-# 1. Decrypt existing file
-dotenvx decrypt -f .env.relens_ai > .env.relens_ai.tmp
-
-# 2. Add new secret to .env.relens_ai.tmp
-
-# 3. Replace and re-encrypt
-mv .env.relens_ai.tmp .env.relens_ai
-dotenvx encrypt -f .env.relens_ai
+# Use set to add a variable directly (encrypts automatically)
+dotenvx set NEW_SECRET "my-secret-value" -f .env.relens_ai
 ```

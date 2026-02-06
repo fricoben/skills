@@ -92,31 +92,19 @@ Env file: .env.relens_ai
 Key var: DOTENV_PRIVATE_KEY_RELENS_AI
 ```
 
-### 3. Add Secrets to Repo-Specific .env File
+### 3. Add Secrets Using `dotenvx set`
 
 **Tell the user to run these commands themselves:**
 
-For a repo like `relens-ai`, create `.env.relens_ai`:
+The `set` command adds or updates a variable and encrypts it automatically in one step:
 
 ```bash
-# Create the env file with your secrets (run this yourself, replacing with real values)
-cat > .env.relens_ai << 'EOF'
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key-here"
-EOF
+# Add each secret (run these yourself, replacing with real values)
+dotenvx set NEXT_PUBLIC_SUPABASE_URL "https://your-project.supabase.co" -f .env.relens_ai
+dotenvx set NEXT_PUBLIC_SUPABASE_ANON_KEY "your-anon-key-here" -f .env.relens_ai
 ```
 
-### 4. Encrypt the Secrets
-
-```bash
-dotenvx encrypt -f .env.relens_ai
-```
-
-This transforms plaintext values into encrypted format:
-```
-NEXT_PUBLIC_SUPABASE_URL="encrypted:BO3QmRRr3ZzK1tXBU8ILXI..."
-```
+Each `set` call creates the file if it doesn't exist, encrypts the value, and updates `.env.keys` with the private key.
 
 ### 5. Store Keys Globally (Recommended)
 
@@ -194,10 +182,10 @@ To use on another machine:
 |------|---------|
 | Install dotenvx | `brew install dotenvx/brew/dotenvx` |
 | Get repo name | `basename $(git rev-parse --show-toplevel) \| tr '-' '_'` |
+| Add/update a variable | `dotenvx set KEY value -f .env.repo_name` |
 | Encrypt env file | `dotenvx encrypt -f .env.repo_name` |
 | Run with secrets | `dotenvx run -f .env.repo_name -- <command>` |
 | Decrypt (view) | `dotenvx decrypt -f .env.repo_name` |
-| Add to existing | Edit file, then `dotenvx encrypt -f .env.repo_name` |
 | Setup global keys | `mkdir -p ~/.dotenvx && touch ~/.dotenvx/keys && chmod 600 ~/.dotenvx/keys` |
 | Add key globally | `echo 'export DOTENV_PRIVATE_KEY_REPO_NAME="..."' >> ~/.dotenvx/keys` |
 
@@ -209,32 +197,25 @@ When user says "I need to add Supabase secrets" (assuming they're in the `relens
 
 > I'll guide you through adding encrypted secrets to the `relens-ai` repo. Run these commands yourself (I won't ask for the actual values):
 >
-> **Step 1:** Create your env file with real values:
+> **Step 1:** Add each secret (replace placeholders with real values):
 > ```bash
-> cat > .env.relens_ai << 'EOF'
-> NEXT_PUBLIC_SUPABASE_URL="YOUR_ACTUAL_URL_HERE"
-> NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_ACTUAL_KEY_HERE"
-> EOF
+> dotenvx set NEXT_PUBLIC_SUPABASE_URL "YOUR_ACTUAL_URL_HERE" -f .env.relens_ai
+> dotenvx set NEXT_PUBLIC_SUPABASE_ANON_KEY "YOUR_ACTUAL_KEY_HERE" -f .env.relens_ai
 > ```
 >
-> **Step 2:** Encrypt it:
-> ```bash
-> dotenvx encrypt -f .env.relens_ai
-> ```
->
-> **Step 3:** Add the key to your global keys file:
+> **Step 2:** Save the private key to your global keys file:
 > ```bash
 > # View the generated key
 > cat .env.keys
 >
-> # Add to global keys (replace with actual key from above)
+> # Add to global keys (replace with real value from above)
 > echo 'export DOTENV_PRIVATE_KEY_RELENS_AI="your-key-here"' >> ~/.dotenvx/keys
 >
 > # Remove local .env.keys (don't commit it)
 > rm .env.keys
 > ```
 >
-> **Step 4:** Commit the encrypted file:
+> **Step 3:** Commit the encrypted file:
 > ```bash
 > git add .env.relens_ai
 > git commit -m "Add encrypted relens_ai secrets"
