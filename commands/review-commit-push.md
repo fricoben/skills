@@ -1,4 +1,4 @@
-Fully agentic loop: commit, push, create PR, review using code-review-excellence, fix real bugs, re-push, and merge once clean. Do not ask for user input unless you cannot confidently fix a bug.
+Fully agentic loop: commit, push, create PR, review using code-review-excellence, fix real bugs, wait for CI, diagnose and fix CI failures using GitHub logs, re-push, and merge once review is clean and CI is green. Do not ask for user input unless you cannot confidently fix a bug or CI failure.
 
 ## Pre-flight Checks
 
@@ -43,7 +43,7 @@ Fully agentic loop: commit, push, create PR, review using code-review-excellence
     - 🟡 **[important]** — Should fix (edge cases that cause runtime failures)
     - 🟢 **[nit]** — Ignore. Do not fix.
 
-11. If there are **zero 🔴 blocking or 🟡 important** findings, skip to step 15.
+11. If there are **zero 🔴 blocking or 🟡 important** findings, skip to step 16 (CI check).
 12. If you find bugs you cannot confidently fix, STOP. Report them with `file:line` and explain why. Do not continue.
 
 ## Fix and Re-push
@@ -59,12 +59,28 @@ Fully agentic loop: commit, push, create PR, review using code-review-excellence
     - `git add -A`
     - Commit with a message describing the fixes (e.g., `fix: handle null user in auth check`)
     - `git push`
-    - Return to step 9 (re-review the updated PR diff).
+    - Return to step 9 (re-review the updated PR diff AND wait for CI).
 
-## CI and Merge
+## CI Check and Diagnose
 
-16. Wait for CI checks: `gh pr checks --watch`
-    - If checks fail and the failure is fixable, fix locally and return to step 13.
-    - If checks fail for unfixable reasons, STOP. Report the failure to the user.
-17. Once all checks pass, merge: `gh pr merge --merge --delete-branch`
-18. Report the PR URL and merge result to the user.
+16. Wait for CI checks to complete: `gh pr checks --watch`
+17. If all checks pass, skip to step 23.
+18. If any check fails, diagnose using GitHub:
+    a. List failed runs: `gh pr checks` and identify the failed check names.
+    b. Find the run ID: `gh run list --branch $(git branch --show-current) --status failure --limit 5 --json databaseId,name,conclusion`
+    c. View the failed run logs: `gh run view <run-id> --log-failed`
+    d. If `--log-failed` output is too large or unclear, drill into specific jobs: `gh run view <run-id>` to list jobs, then `gh run view <run-id> --log --job <job-id>` for the failing job.
+19. Analyze the log output to identify the root cause (test failures, lint errors, type errors, build failures, missing dependencies, etc.).
+20. If the failure is something you cannot fix (infrastructure issue, flaky third-party service, permissions), STOP. Report the failure details and logs to the user.
+21. Fix the identified issues directly in the code. Run local checks if possible (test suite, linter, type checker) to verify the fix before pushing.
+22. Stage, commit (e.g., `fix: resolve CI lint errors`), and push:
+    - `git add -A && git commit -m "<message>" && git push`
+    - Return to step 9 (re-review the full PR diff AND wait for CI again).
+
+## Merge
+
+23. Confirm both conditions are met:
+    - Code review has zero 🔴 blocking or 🟡 important findings.
+    - All CI checks are green.
+24. Merge: `gh pr merge --merge --delete-branch`
+25. Report the PR URL and merge result to the user.
