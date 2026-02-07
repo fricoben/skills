@@ -10,6 +10,7 @@ human-in-the-loop confirmation.
 from __future__ import annotations
 
 import json
+import os
 import re
 import smtplib
 from dataclasses import dataclass
@@ -88,7 +89,7 @@ def load_or_init_config() -> Config:
             "imap": {"host": "127.0.0.1", "port": 1143},
             "smtp": {"host": "127.0.0.1", "ports": [1025, 1465]},
             "accounts": ["ben@lfglabs.dev", "ben@starknet.id"],
-            "password": "x6O23l3NEW1au2VoHW3dgQ",
+            "password": os.environ.get("PROTON_BRIDGE_PASSWORD", ""),
             "recipient": "benjamin.flores@expenses.revolut.com",
             "cutoff_by_account": {
                 "ben@lfglabs.dev": cutoff,
@@ -107,13 +108,17 @@ def load_or_init_config() -> Config:
         if acct not in cutoff_by_account:
             cutoff_by_account[acct] = yesterday_midnight_local().isoformat()
 
+    password = os.environ.get("PROTON_BRIDGE_PASSWORD") or data.get("password") or ""
+    if not password:
+        raise SystemExit("No password found. Set PROTON_BRIDGE_PASSWORD or add 'password' to state file.")
+
     return Config(
         imap_host=data["imap"]["host"],
         imap_port=int(data["imap"]["port"]),
         smtp_host=data["smtp"]["host"],
         smtp_ports=[int(p) for p in data["smtp"]["ports"]],
         accounts=list(data["accounts"]),
-        password=str(data["password"]),
+        password=password,
         recipient=str(data["recipient"]),
         cutoff_by_account=cutoff_by_account,
         accounting_mailboxes=list(data.get("accounting_mailboxes", [])),
