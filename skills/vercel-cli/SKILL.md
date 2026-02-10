@@ -24,6 +24,16 @@ vercel whoami      # Check authentication
 vercel switch      # Switch team scope if needed
 ```
 
+## Important: Never Create New Projects
+
+**Do NOT create a new Vercel project** unless the user explicitly asks for it. The Vercel project almost always already exists. To find the correct project, check in this order:
+
+1. **Local config files** — Look for `agent.md` or `cloud.md` in the repository (or `.context/` directory) for the Vercel project name/ID.
+2. **Vercel LFG Labs org** — Search projects in the LFG Labs team: `vercel project ls --scope lfg-labs`
+3. **Vercel fricoben org** — Search projects in the fricoben scope: `vercel project ls --scope fricoben`
+
+If you find a matching project, use `vercel link --yes` to link the local directory to it instead of creating a new one.
+
 ## Global Options
 
 These flags work with most commands:
