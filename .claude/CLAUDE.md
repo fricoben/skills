@@ -1,6 +1,6 @@
 # Agent Skills Repository
 
-Canonical repository for reusable agent skills, commands, and MCP server configurations.
+Canonical repository for reusable agent skills and MCP server configurations.
 
 ## Skills (managed by Vercel `skills` CLI)
 
@@ -28,14 +28,6 @@ This installs the skill to all detected agents AND saves it into this repo's `sk
 
 Use the `skill-creator` skill: ask your agent to create a new skill in `skills/<name>/SKILL.md`.
 
-## Commands
-
-Sync commands to Claude Code and Codex:
-
-```bash
-python3 bin/sync-commands.py
-```
-
 ## MCP Servers
 
 MCP servers are defined in `mcp/servers.json`. Sync them:
@@ -53,7 +45,6 @@ Options:
 
 ```
 skills/           # Skill definitions (SKILL.md + references)
-commands/         # Slash commands (synced to ~/.claude/commands/ and ~/.codex/prompts/)
 mcp/              # MCP server configurations
 bin/              # Sync, validation, and utility scripts
 ```

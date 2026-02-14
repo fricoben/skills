@@ -1,6 +1,6 @@
 # agent-skills
 
-A curated pack of 20 agent skills for Claude Code, Codex, Cursor, and 30+ other AI agents. Distributed via the [Vercel `skills` CLI](https://github.com/vercel-labs/skills).
+A curated pack of 22 agent skills for Claude Code, Codex, Cursor, and 30+ other AI agents. Distributed via the [Vercel `skills` CLI](https://github.com/vercel-labs/skills).
 
 ## Install all skills
 
@@ -39,7 +39,9 @@ npx skills add fricoben/skills --list
 | pptx | Create, edit, and analyze PowerPoint presentations with layouts and speaker notes |
 | proton-bridge | Read, organize, and send Proton Mail via local IMAP/SMTP bridge |
 | remotion-best-practices | Best practices for Remotion video creation in React |
+| review-commit-push | Agentic loop: commit, push, create PR, review, fix bugs, wait for CI, and merge |
 | seo-audit | Audit and diagnose technical SEO issues with actionable recommendations |
+| sync-config | Sync all skills and MCP servers to all installed agents |
 | skill-creator | Guide for creating and updating agent skills |
 | vercel-react-best-practices | React and Next.js performance optimization from Vercel Engineering |
 | web-design-guidelines | Review UI code for Web Interface Guidelines and accessibility compliance |
@@ -60,7 +62,6 @@ npx skills add fricoben/skills --list
 ├── skills/           # Reusable agent skills (SKILL.md + references)
 ├── mcp/              # MCP server configurations
 │   └── servers.json  # Canonical MCP definitions
-├── commands/         # Custom slash commands/prompts
 └── bin/              # Utility scripts
 ```
 
@@ -97,20 +98,6 @@ python3 bin/sync-mcp.py --codex-only
 **Destinations:**
 - Claude Code: `~/.claude.json` → `mcpServers`
 - Codex: `~/.codex/config.toml` → `[mcp_servers.*]`
-
-### Syncing Commands
-
-Custom commands are defined in `commands/` and synced to both tools.
-
-```bash
-python3 bin/sync-commands.py              # Sync all commands
-python3 bin/sync-commands.py --dry-run    # Preview changes
-python3 bin/sync-commands.py --prune      # Remove orphaned commands
-```
-
-**Destinations:**
-- Claude Code: `~/.claude/commands/` (invoked as `/command-name`)
-- Codex: `~/.codex/prompts/` (invoked as `/prompts:command-name`)
 
 ### Placeholder Substitution
 
