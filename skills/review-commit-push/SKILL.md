@@ -1,3 +1,15 @@
+---
+name: review-commit-push
+description: >
+  Fully agentic loop: commit, push, create PR, review using
+  code-review-excellence, fix real bugs, wait for CI, diagnose and fix CI
+  failures using GitHub logs, re-push, and merge once review is clean and CI
+  is green. Trigger terms: review-commit-push, commit push review, agentic
+  loop, PR review, CI fix, merge PR.
+---
+
+# Review, Commit, Push
+
 Fully agentic loop: commit, push, create PR, review using code-review-excellence, fix real bugs, wait for CI, diagnose and fix CI failures using GitHub logs, re-push, and merge once review is clean and CI is green. Do not ask for user input unless you cannot confidently fix a bug or CI failure.
 
 ## Pre-flight Checks
