@@ -254,3 +254,6 @@ $RECYCLE.BIN/
 
 # Playwright MCP generated files
 .playwright-mcp/
+
+# Revolut sync run logs (local state)
+workflows/revolut-sync-runs.json

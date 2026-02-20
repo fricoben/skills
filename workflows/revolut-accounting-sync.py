@@ -57,8 +57,28 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
+def workflows_dir() -> Path:
+    return Path(__file__).resolve().parent
+
+
 def state_path() -> Path:
     return repo_root() / ".context" / "revolut_accounting_sync.json"
+
+
+def run_log_path() -> Path:
+    return workflows_dir() / "revolut-sync-runs.json"
+
+
+def load_run_log() -> List[dict]:
+    p = run_log_path()
+    if p.exists():
+        return json.loads(p.read_text(encoding="utf-8"))
+    return []
+
+
+def save_run_log(log: List[dict]) -> None:
+    p = run_log_path()
+    p.write_text(json.dumps(log, indent=2, default=str), encoding="utf-8")
 
 
 def decode_header_value(val: Optional[str]) -> str:
@@ -179,7 +199,15 @@ def extract_pdf_filenames_from_bodystructure(raw: bytes) -> List[str]:
         text = raw.decode(errors="ignore")
     except Exception:
         text = str(raw)
-    return [f.strip() for f in PDF_RE.findall(text) if f]
+    # Deduplicate: BODYSTRUCTURE lists each filename in NAME + FILENAME fields
+    seen: set = set()
+    result: List[str] = []
+    for f in PDF_RE.findall(text):
+        f = f.strip()
+        if f and f.lower() not in seen:
+            seen.add(f.lower())
+            result.append(f)
+    return result
 
 
 def smtp_pick_port(cfg: Config, account: str) -> Optional[int]:
@@ -208,18 +236,22 @@ def fetch_headers_and_bodystructure(imap: imaplib.IMAP4, uid: bytes) -> tuple[Op
     )
     if typ != "OK" or not data or data[0] is None:
         return None, None
-    item = data[0]
-    raw = None
+    # imaplib splits FETCH responses with literals: data[0] is a tuple
+    # (preamble_bytes, header_bytes) and data[1] is bytes containing
+    # BODYSTRUCTURE + INTERNALDATE. Concatenate all bytes to get full response.
+    raw_parts: List[bytes] = []
     header_msg = None
-    if isinstance(item, tuple):
-        # tuple[0] often contains the envelope + bodystructure + internaldate
-        if isinstance(item[0], (bytes, bytearray)):
-            raw = item[0]
-        # tuple[1] contains header bytes
-        if len(item) > 1 and isinstance(item[1], (bytes, bytearray)):
-            header_msg = message_from_bytes(item[1])
-    elif isinstance(item, (bytes, bytearray)):
-        raw = item
+    for item in data:
+        if isinstance(item, tuple):
+            for part in item:
+                if isinstance(part, (bytes, bytearray)):
+                    raw_parts.append(part)
+            # The second element of the tuple is the header content
+            if len(item) > 1 and isinstance(item[1], (bytes, bytearray)):
+                header_msg = message_from_bytes(item[1])
+        elif isinstance(item, (bytes, bytearray)):
+            raw_parts.append(item)
+    raw = b" ".join(raw_parts) if raw_parts else None
     return header_msg, raw
 
 
@@ -232,75 +264,73 @@ def fetch_full_message(imap: imaplib.IMAP4, uid: bytes) -> Optional[email.messag
     return None
 
 
-def build_candidates(
+def collect_attachments_from_mailboxes(
     imap: imaplib.IMAP4,
-    mailbox: str,
+    mailboxes: List[str],
     cutoff: datetime,
-) -> List[tuple[bytes, datetime, List[str]]]:
-    typ, _ = imap.select(f'"{mailbox}"')
-    if typ != "OK":
-        return []
-
-    since_str = cutoff.strftime("%d-%b-%Y")
-    typ, data = imap.search(None, "SINCE", since_str)
-    if typ != "OK" or not data or not data[0]:
-        return []
-
-    uids = data[0].split()
-    candidates: List[tuple[bytes, datetime, List[str]]] = []
-    for uid in uids:
-        hdr, raw = fetch_headers_and_bodystructure(imap, uid)
-        if raw is None:
-            continue
-        internal = parse_internaldate(raw)
-        if internal is None or internal <= cutoff:
-            continue
-        pdfs = extract_pdf_filenames_from_bodystructure(raw)
-        if not pdfs:
-            continue
-        candidates.append((uid, internal, pdfs))
-    return candidates
-
-
-def collect_attachments(
-    imap: imaplib.IMAP4,
-    candidates: Iterable[tuple[bytes, datetime, List[str]]],
 ) -> List[AttachmentToSend]:
+    """Scan mailboxes one at a time, deduplicating by Message-ID across all."""
     to_send: List[AttachmentToSend] = []
-    seen_msg_ids = set()
+    seen_msg_ids: set = set()
 
-    for uid, internaldate, pdfs in candidates:
-        msg = fetch_full_message(imap, uid)
-        if not msg:
+    for mailbox in mailboxes:
+        typ, _ = imap.select(f'"{mailbox}"')
+        if typ != "OK":
             continue
-        msg_id = msg.get("Message-ID")
-        if msg_id and msg_id in seen_msg_ids:
+
+        since_str = cutoff.strftime("%d-%b-%Y")
+        typ, data = imap.search(None, "SINCE", since_str)
+        if typ != "OK" or not data or not data[0]:
             continue
-        if msg_id:
-            seen_msg_ids.add(msg_id)
 
-        subject = decode_header_value(msg.get("Subject"))
-        sender = decode_header_value(msg.get("From"))
-        date_str = msg.get("Date") or ""
+        uids = data[0].split()
+        for uid in uids:
+            hdr, raw = fetch_headers_and_bodystructure(imap, uid)
+            if raw is None:
+                continue
+            internal = parse_internaldate(raw)
+            if internal is None or internal <= cutoff:
+                continue
+            pdfs = extract_pdf_filenames_from_bodystructure(raw)
+            if not pdfs:
+                continue
 
-        pdf_lower = {p.lower() for p in pdfs}
-        for part in msg.walk():
-            if part.get_content_maintype() == "multipart":
+            # Deduplicate by Message-ID: fetch full message in correct mailbox context
+            msg = fetch_full_message(imap, uid)
+            if not msg:
                 continue
-            filename = part.get_filename()
-            if not filename or filename.lower() not in pdf_lower:
+            msg_id = msg.get("Message-ID")
+            if msg_id and msg_id in seen_msg_ids:
                 continue
-            payload = part.get_payload(decode=True) or b""
-            to_send.append(
-                AttachmentToSend(
-                    filename=filename,
-                    payload=payload,
-                    subject=subject,
-                    sender=sender,
-                    date_str=date_str,
-                    internaldate=internaldate,
+            if msg_id:
+                seen_msg_ids.add(msg_id)
+
+            # Skip emails previously forwarded by this script
+            subject = decode_header_value(msg.get("Subject"))
+            if subject.startswith("Invoice/Receipt:"):
+                continue
+
+            sender = decode_header_value(msg.get("From"))
+            date_str = msg.get("Date") or ""
+
+            pdf_lower = {p.lower() for p in pdfs}
+            for part in msg.walk():
+                if part.get_content_maintype() == "multipart":
+                    continue
+                filename = part.get_filename()
+                if not filename or filename.lower() not in pdf_lower:
+                    continue
+                payload = part.get_payload(decode=True) or b""
+                to_send.append(
+                    AttachmentToSend(
+                        filename=filename,
+                        payload=payload,
+                        subject=subject,
+                        sender=sender,
+                        date_str=date_str,
+                        internaldate=internal,
+                    )
                 )
-            )
     return to_send
 
 
@@ -311,31 +341,36 @@ def send_attachments(
     attachments: List[AttachmentToSend],
 ) -> int:
     sent = 0
-    with smtplib.SMTP_SSL(cfg.smtp_host, smtp_port, timeout=30) as server:
-        server.login(account, cfg.password)
-        for idx, item in enumerate(attachments, 1):
-            msg = MIMEMultipart()
-            msg["From"] = account
-            msg["To"] = cfg.recipient
-            subj = item.subject or item.filename
-            msg["Subject"] = f"Invoice/Receipt: {subj}"
+    try:
+        with smtplib.SMTP_SSL(cfg.smtp_host, smtp_port, timeout=30) as server:
+            server.login(account, cfg.password)
+            for idx, item in enumerate(attachments, 1):
+                msg = MIMEMultipart()
+                msg["From"] = account
+                msg["To"] = cfg.recipient
+                subj = item.subject or item.filename
+                msg["Subject"] = f"Invoice/Receipt: {subj}"
 
-            body = (
-                "Forwarding invoice/receipt.\n"
-                f"From: {item.sender}\n"
-                f"Date: {item.date_str}\n"
-                f"Original subject: {item.subject}\n"
-            )
-            msg.attach(MIMEText(body, "plain"))
+                body = (
+                    "Forwarding invoice/receipt.\n"
+                    f"From: {item.sender}\n"
+                    f"Date: {item.date_str}\n"
+                    f"Original subject: {item.subject}\n"
+                )
+                msg.attach(MIMEText(body, "plain"))
 
-            part = MIMEApplication(item.payload, Name=item.filename)
-            part["Content-Disposition"] = f'attachment; filename="{item.filename}"'
-            msg.attach(part)
+                part = MIMEApplication(item.payload, Name=item.filename)
+                part["Content-Disposition"] = f'attachment; filename="{item.filename}"'
+                msg.attach(part)
 
-            server.send_message(msg)
-            sent += 1
-            if idx % 25 == 0:
-                print(f"  sent {idx}/{len(attachments)}", flush=True)
+                server.send_message(msg)
+                sent += 1
+                if idx % 25 == 0:
+                    print(f"  sent {idx}/{len(attachments)}", flush=True)
+    except smtplib.SMTPDataError as e:
+        print(f"\n  SMTP error after {sent}/{len(attachments)}: {e}", flush=True)
+        if "limit" in str(e).lower():
+            print("  Rate limit hit. Progress saved — retry later.", flush=True)
     return sent
 
 
@@ -343,8 +378,16 @@ def main() -> int:
     cfg = load_or_init_config()
     cfg_changed = False
 
+    run_log = load_run_log()
+    run_entry = {
+        "run_at": datetime.now().astimezone().isoformat(),
+        "accounts": {},
+    }
+
     for account in cfg.accounts:
         print(f"\n== {account} ==", flush=True)
+        acct_log: dict = {"cutoff_used": None, "new_cutoff": None, "mailboxes": [], "pdfs_found": 0, "pdfs_sent": 0, "status": "pending", "pdf_details": []}
+
         cutoff_iso = cfg.cutoff_by_account.get(account)
         cutoff = None
         if cutoff_iso:
@@ -357,61 +400,85 @@ def main() -> int:
             cfg.cutoff_by_account[account] = cutoff.isoformat()
             cfg_changed = True
 
+        acct_log["cutoff_used"] = cutoff.isoformat()
+
         imap = imap_connect(cfg, account)
         available = list_mailboxes(imap)
         accounting_boxes = resolve_accounting_mailboxes(available, cfg.accounting_mailboxes)
         if not accounting_boxes:
             print("No Accounting mailbox found.")
+            acct_log["status"] = "no_mailbox"
+            run_entry["accounts"][account] = acct_log
             imap.logout()
             continue
 
+        acct_log["mailboxes"] = accounting_boxes
         print(f"Accounting mailboxes: {', '.join(accounting_boxes)}")
         print(f"Cutoff (send after): {cutoff.isoformat()}")
 
-        candidates: List[tuple[bytes, datetime, List[str]]] = []
-        for mailbox in accounting_boxes:
-            candidates.extend(build_candidates(imap, mailbox, cutoff))
+        attachments = collect_attachments_from_mailboxes(imap, accounting_boxes, cutoff)
+        acct_log["pdfs_found"] = len(attachments)
+        acct_log["pdf_details"] = [
+            {"filename": a.filename, "subject": a.subject, "sender": a.sender, "date": a.date_str, "internaldate": a.internaldate.isoformat()}
+            for a in attachments
+        ]
 
-        if not candidates:
-            print("No new messages after cutoff.")
-            imap.logout()
-            continue
-
-        attachments = collect_attachments(imap, candidates)
         if not attachments:
-            print("No PDF attachments found in new messages.")
+            print("No PDF attachments found after cutoff.")
+            acct_log["status"] = "no_pdfs"
+            acct_log["new_cutoff"] = cutoff.isoformat()
+            run_entry["accounts"][account] = acct_log
             imap.logout()
             continue
 
-        # Count unique messages
-        unique_msgs = {uid for uid, _, _ in candidates}
-        print(f"Ready to send: {len(attachments)} PDF(s) from {len(unique_msgs)} message(s)")
+        print(f"Ready to send: {len(attachments)} PDF(s) (deduplicated across mailboxes)")
 
         confirm = input("Send now? [y/N]: ").strip().lower()
         if confirm not in {"y", "yes"}:
             print("Skipped sending for this account.")
+            acct_log["status"] = "skipped_by_user"
+            acct_log["new_cutoff"] = cutoff.isoformat()
+            run_entry["accounts"][account] = acct_log
             imap.logout()
             continue
 
         smtp_port = smtp_pick_port(cfg, account)
         if not smtp_port:
             print("SMTP login failed on ports 1025/1465. Skipping send.")
+            acct_log["status"] = "smtp_failed"
+            acct_log["new_cutoff"] = cutoff.isoformat()
+            run_entry["accounts"][account] = acct_log
             imap.logout()
             continue
 
         sent_count = send_attachments(cfg, account, smtp_port, attachments)
         print(f"Sent {sent_count}/{len(attachments)}")
 
-        # Advance cutoff to latest internaldate sent
-        latest = max(a.internaldate for a in attachments)
-        cfg.cutoff_by_account[account] = latest.isoformat()
-        cfg_changed = True
+        acct_log["pdfs_sent"] = sent_count
+
+        # Advance cutoff to latest internaldate of actually sent attachments
+        if sent_count > 0:
+            sent_attachments_list = attachments[:sent_count]
+            latest = max(a.internaldate for a in sent_attachments_list)
+            cfg.cutoff_by_account[account] = latest.isoformat()
+            cfg_changed = True
+            acct_log["new_cutoff"] = latest.isoformat()
+        else:
+            acct_log["new_cutoff"] = cutoff.isoformat()
+
+        acct_log["status"] = "sent" if sent_count == len(attachments) else "partial_send" if sent_count > 0 else "rate_limited"
+        run_entry["accounts"][account] = acct_log
 
         imap.logout()
 
+    # Save run log
+    run_log.append(run_entry)
+    save_run_log(run_log)
+    print(f"Run log saved: {run_log_path()}")
+
     if cfg_changed:
         save_config(cfg)
-        print(f"\nUpdated state: {state_path()}")
+        print(f"Updated state: {state_path()}")
 
     return 0
 
