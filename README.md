@@ -26,7 +26,7 @@ npx skills add fricoben/skills --list
 |-------|-------------|
 | agent-browser | Headless browser automation with Playwright for web scraping, form filling, and testing |
 | atomic-design | Front-end component architecture separating pure UI from data-connected components |
-| bitwarden-secrets | Manage and retrieve secrets from Bitwarden Secrets Manager via bws CLI |
+| bitwarden-secrets | Non-Vercel secrets via Bitwarden Secrets Manager: bwsrun, bwsset, bwsadmin (replaces dotenvx) |
 | code-review-excellence | Code review practices for constructive feedback, catching bugs, and knowledge sharing |
 | copywriting | Write and improve marketing copy for landing pages, pricing pages, and CTAs |
 | docx | Create, edit, and analyze Word documents with tracked changes and formatting |

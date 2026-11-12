@@ -1,0 +1,3 @@
+interface:
+  display_name: Bitwarden Secrets
+  short_description: 'Secrets via Bitwarden Secrets Manager: bwsrun, bwsset, bws (replaces dotenvx)'
