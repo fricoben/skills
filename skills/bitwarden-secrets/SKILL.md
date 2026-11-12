@@ -1,311 +1,143 @@
 ---
 name: bitwarden-secrets
 description: >
-  Manage and retrieve secrets from Bitwarden Secrets Manager using the bws CLI
-  for user simulation and automated testing purposes.
-  Trigger terms: bitwarden, bws, secrets manager, credentials, api keys, secrets,
-  machine account, access token, inject secrets, environment variables, user simulation,
-  test credentials, login credentials.
+  Single source of truth for non-Vercel secrets (API keys, account credentials,
+  service tokens) on Ben's Mac and on Cloud: Bitwarden Secrets Manager via bws,
+  bwsrun, bwsset and bwsadmin. Replaces dotenvx (retired 6 Nov 2026). App runtime
+  variables live in Vercel instead (see vercel-cli). Trigger terms: bitwarden, bws,
+  bwsrun, bwsset, bwsadmin, secrets, secret, api key, credentials, password, token,
+  env vars, dotenvx, .env.socials, .env.lfg_admin, rotate a key, add a secret.
 ---
 
-## When to Use
-- **User simulation testing**: Retrieving login credentials for agent-browser to simulate real user flows
-- Retrieving secrets from Bitwarden Secrets Manager for a project
-- Setting up a new project with Bitwarden Secrets Manager
-- Injecting secrets into application runtime via `bws run`
-- Syncing Bitwarden secrets to local `.env` files (encrypted with dotenvx)
-- Managing secrets across multiple projects/environments
-- Automated E2E testing that requires real user credentials
+# Bitwarden Secrets Manager (bws, bwsrun, bwsset, bwsadmin)
 
-## When NOT to Use
-- The user wants you (the agent) to handle actual secret values directly
-- Simple local-only secrets that don't need centralized management
-- One-time passwords or TOTP codes (use Bitwarden Password Manager)
+## Where secrets live
 
-## Primary Use Case: User Simulation with Browser Automation
+| Kind | Source of truth | How to use it |
+|---|---|---|
+| Variables of an app deployed on Vercel | **Vercel** | `vercel env run -- <cmd>` (default, no file on disk; see `vercel-cli`). `vercel env pull .env.local` only if a tool needs a file |
+| Everything else: script/API keys, account credentials, service tokens, non-Vercel parts of apps | **Bitwarden Secrets Manager** | `bwsrun <repo> -- <cmd>` |
 
-This skill is designed to work alongside browser automation tools to enable realistic user simulation. The workflow is:
+dotenvx is retired. Do not create `.env.<name>` encrypted files, do not use
+`dotenvx`, `dx` or `~/.dotenvx/keys`, and do not suggest them.
 
-1. **Retrieve credentials** from Bitwarden Secrets Manager (email, password, API keys)
-2. **Use browser automation** to interact with those credentials
-3. **Simulate real user flows** (login, form submission, authenticated actions)
+## Layout (Free plan: max 3 projects, 2 machine accounts; 2 projects used)
 
-### Browser Automation Tool
+Secret names are `<repo>__<NAME>`, for example `socials__TYPEFULLY_KEY`. A secret without
+that prefix is invisible to `bwsrun`/`bwsset`. They find secrets by prefix, not by
+project, so the project only matters when a new prefix is created.
 
-Use **agent-browser** CLI for all browser automation. Do NOT use Playwright MCP tools.
+| Project | Prefixes | Readable by |
+|---|---|---|
+| `ops` | `socials__`, `lfg_admin__`, `backup__`, `hermes__`, `fricorepo__`, `lfg_compliance__`, `infra__` (infrastructure tokens: `VERCEL_TOKEN`, `BOAT_API_KEY`; `bwsrun infra -- <cmd>`), `archive__` (retired dotenvx keys, 6 Nov 2026) | `mac-ben` (read/write), `cloud` (read) |
+| `apps` | `boost__`, `relens__`, `trustless__` (only values that are not in Vercel) | `mac-ben` (read/write), `cloud` (read) |
 
-| Environment | Tool | Notes |
-|-------------|------|-------|
-| **All environments** | agent-browser | Use `agent-browser <command>` CLI |
-| **Cloud/Serverless** | Cloud-native browser | Use platform's browser API (e.g., `@cloudflare/puppeteer` for Cloudflare Workers) |
+Rule for a new prefix: a deployed app's non-Vercel value goes in `apps`;
+everything else (scripts, account credentials, Hermes, backups, any repo) goes in `ops`.
+(`ops` was `shared` until 12 Nov 2026; the former `mac` project was merged into it.
+There is no `persona__` prefix any more.)
 
-### Example: Login Flow Simulation
+Machine-account tokens (never print, never put in env files or chat):
+- Mac (`mac-ben`): separate keychain `~/Library/Keychains/bws.keychain-db`, service `bws-mac`;
+  locks after 8 h and on sleep.
+- Cloud (`cloud`): `/home/claudine/.config/bws/token` (mode 600, user `claudine`).
 
-```bash
-# 1. Get credentials from Bitwarden (agent retrieves these)
-EMAIL=$(bws secret get <EMAIL_SECRET_ID> -o json | jq -r '.value')
-PASSWORD=$(bws secret get <PASSWORD_SECRET_ID> -o json | jq -r '.value')
-
-# 2. Use with agent-browser to:
-agent-browser open https://app.example.com/login
-agent-browser snapshot -i
-agent-browser fill @e1 "$EMAIL"      # Fill email field
-agent-browser fill @e2 "$PASSWORD"   # Fill password field
-agent-browser click @e3              # Click submit
-agent-browser snapshot -i            # Verify authenticated state
-```
-
-### Integration with Project Tools
-
-| Project Tool | Integration |
-|--------------|-------------|
-| **agent-browser** | Use retrieved credentials to fill login forms, authenticate users |
-| **Cloud-native browser** (serverless) | Same workflow, using platform's browser API |
-| **Supabase MCP** | Retrieve service keys, connection strings for database operations |
-| **API Testing** | Inject API keys into request headers |
-| **E2E Tests** | Provide test user credentials for authenticated flows |
-
-## CRITICAL: Agent Limitations
-
-**NEVER ask the user for actual secret values or access tokens.** Instead:
-1. Guide them through commands they run themselves
-2. Provide exact command syntax with placeholders
-3. Explain what each step does
-
-The agent must NOT:
-- Ask "what is your access token?"
-- Request users paste secrets into the chat
-- Store or process actual secret values
-
-## Prerequisites
-
-The agent should verify these are set up:
+## Run a command with a repo's secrets
 
 ```bash
-# Check bws is installed
-bws --version
-
-# Check access token is available (don't show the value!)
-echo ${BWS_ACCESS_TOKEN:+Access token is set}
+bwsrun socials -- bun run verity-sales/crm/scripts/x-me.ts
+bwsrun lfg_admin -- bun run legal/scripts/documenso/documenso.ts list
 ```
 
-## macOS Keychain Integration
+- `~/.local/bin/bwsrun` on both the Mac and Cloud (same script).
+- Loads only `<repo>__*` secrets and exports them without the prefix (`TYPEFULLY_KEY`),
+  plus `BWSRUN_REPO=<repo>`.
+- The bws token is never exported to the command; `DOTENV_PRIVATE_KEY*` vars are stripped.
+- On the Mac, a locked keychain prompts once (`security unlock-keychain`); in a non-interactive
+  shell it fails with that instruction instead.
+- Fails if no `<repo>__*` secret is visible, so a script never runs silently without secrets.
+- In `package.json`: `"x:me": "bwsrun socials -- bun run …"`.
+- Read one value into a variable without printing it:
+  `v=$(bwsrun socials -- printenv TELEGRAM_BOT_TOKEN)` (use it, then `unset v`).
 
-The BWS access token can be stored securely in macOS Keychain under the service name `bws-access-token`:
+## Add, change or rotate a secret
+
+Preferred: the Bitwarden web app (Secrets Manager, project above, name `<repo>__<NAME>`).
+
+From a terminal, value on stdin (never as an argument you type, never in chat):
 
 ```bash
-# Store the token in Keychain (user runs this once)
-security add-generic-password -a "$USER" -s "bws-access-token" -w "your-token-here"
-
-# Retrieve and export as environment variable
-export BWS_ACCESS_TOKEN=$(security find-generic-password -a "$USER" -s "bws-access-token" -w)
+pbpaste | bwsset socials TYPEFULLY_KEY && pbcopy < /dev/null   # update or create
 ```
 
-**For persistent use**, add this line to your shell profile (`~/.zshrc` or `~/.bashrc`):
+- `bwsset` updates an existing secret, or creates a new key under a prefix that already
+  exists (it picks that prefix's project). It cannot create the first secret of a new
+  prefix: create that one in the web app, in the project given by the rule above.
+- A single trailing newline on stdin is dropped.
+- Only `mac-ben` can write; on Cloud `bwsset` fails (read-only token).
+
+Code that rotates a token (for example the X OAuth refresh token in
+`lfg_marketing/verity-sales/crm/src/x-api.ts`) saves it with
+`bwsset "$BWSRUN_REPO" <KEY>` with the value on stdin.
+
+## Cloud specifics
+
+- `bwsrun backup` is used by the Hermes `backup-daily` job (`~/.hermes/scripts/backup-lib.sh`).
+- Hermes's own credentials (Telegram bot and API, OpenRouter, OpenAI, sandbox proxy, API server,
+  Notion MCP token) are `hermes__*` secrets. Hermes loads them at startup through its
+  `secrets.command` source `/usr/local/libexec/claudine-secret-source` (one `bws secret list`,
+  Hermes timeout 10 s), which also supplies `TWITTERAPI_IO_KEY` (from `socials__`) for
+  morning-x. Hermes's built-in `secrets.bitwarden` integration stays disabled.
+  `~/.hermes/.env` keeps only non-secret settings; `config.yaml` references `${NOTION_TOKEN}`.
+- To add a Hermes secret: create `hermes__<NAME>` from the Mac, add `<NAME>` to the `WANTED`
+  list in the helper (owned by root: `sudo`), then
+  `sudo systemctl restart claudine-telegram.service` (a system unit, not a user unit).
+  The helper exits with an error if any listed secret is missing.
+- `~/.hermes/auth.json` (provider logins) is managed by Hermes.
+- Cloud's token is read-only on both projects (Ben's decision, 6 Nov 2026); only the Mac can write.
+  `bwsadmin` exists only on the Mac.
+
+## Admin tasks: `bwsadmin` (Mac)
+
+`~/.local/bin/bwsadmin <bws args>` runs `bws` with the Mac token from the keychain, forces
+JSON output and replaces every `value` with `<redacted>`. It refuses `secret create` and
+`--value` (use `bwsset`). Pre-approved for Claude in `~/.claude/settings.json`:
+`project list|edit`, `secret list|get|edit`. Anything else (for example `secret delete`,
+`project delete`) is not pre-approved and needs Ben.
 
 ```bash
-export BWS_ACCESS_TOKEN=$(security find-generic-password -a "$USER" -s "bws-access-token" -w 2>/dev/null)
+bwsadmin project list
+bwsadmin secret list | python3 -c 'import json,sys;[print(s["id"],s["key"]) for s in json.load(sys.stdin)]'
+bwsadmin secret edit <SECRET_ID> --project-id <PROJECT_ID> --output none   # move a secret
+bwsadmin secret edit <SECRET_ID> --key <repo>__<NAME> --output none        # rename a secret
 ```
 
-This approach:
-- Stores the token encrypted in macOS Keychain (protected by login credentials)
-- Makes it automatically available in new terminal sessions
-- Avoids plain-text secrets in config files
+Bitwarden returns 404 when listing secrets of an empty project; list all secrets and filter by
+`projectId` instead.
 
-## Inputs the Agent Should Ask For (only if missing)
-- **Project name**: Which Bitwarden project to use (e.g., "vibetracking.dev")
-- **Secret names**: What secrets are needed (e.g., `SUPABASE_URL`, `API_KEY`)
-- **Target env file**: Where to store secrets locally (e.g., `.env.vibetracking`)
-
-## Outputs / Definition of Done
-- Secrets retrieved and available for use
-- Local `.env` file created/updated (encrypted with dotenvx if needed)
-- Verification that secrets are accessible
-
-## Procedure
-
-### 1. List Available Projects
+## Raw bws CLI (only if bwsadmin cannot do it; Ben runs it)
 
 ```bash
-bws project list
+export BWS_ACCESS_TOKEN="$(security find-generic-password -s bws-mac -w ~/Library/Keychains/bws.keychain-db)"
+bws project list --output table          # names and ids only
+bws secret list <PROJECT_ID> --output json | python3 -c 'import json,sys;[print(s["key"]) for s in json.load(sys.stdin)]'
+unset BWS_ACCESS_TOKEN
 ```
 
-This shows all projects the machine account can access.
+`bws secret list/get` output contains values: always filter to keys/ids, never print it
+raw. A value starting with `-` needs `--` before the positional arguments
+(`bws secret create -- KEY VALUE PROJECT_ID`).
 
-### 2. List Secrets in a Project
+## Never
 
-```bash
-# Get project ID first
-bws project list --output json | jq '.[] | select(.name == "PROJECT_NAME") | .id'
+- Print, echo, log or paste secret values or the bws token; never run `env`/`printenv`
+  without a variable name in a shell that has secrets.
+- `source` a secrets file into a login shell (that is how the 6 Nov 2026 key exposure happened).
+- Commit `.env`, `.env.local` or any file holding values.
+- Create a Bitwarden project or machine account without asking (Free plan limits).
 
-# List secrets in that project
-bws secret list <PROJECT_ID>
-```
+## Where this skill lives
 
-### 3. Retrieve a Specific Secret
-
-```bash
-# Get full secret object
-bws secret get <SECRET_ID>
-
-# Get just the value (useful for scripts)
-bws secret get <SECRET_ID> --output json | jq -r '.value'
-```
-
-### 4. Inject Secrets into Commands (Recommended)
-
-The `bws run` command injects all project secrets as environment variables:
-
-```bash
-# Run a command with secrets injected
-bws run --project-id <PROJECT_ID> -- npm run dev
-
-# Run with specific shell
-bws run --project-id <PROJECT_ID> --shell zsh -- './start.sh'
-
-# Don't inherit current environment (isolated)
-bws run --project-id <PROJECT_ID> --no-inherit-env -- node server.js
-```
-
-### 5. Export Secrets to Local .env File
-
-For projects using dotenvx, create a local encrypted `.env` file:
-
-**Tell the user to run these commands themselves:**
-
-```bash
-# Export secrets in env format
-bws secret list <PROJECT_ID> --output env > .env.projectname
-
-# Encrypt with dotenvx
-dotenvx encrypt -f .env.projectname
-
-# Now the encrypted file can be committed
-git add .env.projectname
-```
-
-### 6. Sync Workflow: Bitwarden + dotenvx
-
-The recommended pattern for managing secrets:
-
-1. **Bitwarden Secrets Manager** = Central source of truth
-2. **dotenvx encrypted .env** = Local cache (can be committed)
-3. **BWS_ACCESS_TOKEN** = Stored in dotenvx vault
-
-```bash
-# Store access token in dotenvx (user runs this)
-cat > .env.bitwarden << 'EOF'
-BWS_ACCESS_TOKEN="your-access-token-here"
-EOF
-dotenvx encrypt -f .env.bitwarden
-
-# Use it to fetch other secrets
-dotenvx run -f .env.bitwarden -- bws secret list <PROJECT_ID>
-```
-
-## Quick Reference Commands
-
-| Task | Command |
-|------|---------|
-| List projects | `bws project list` |
-| List secrets | `bws secret list [PROJECT_ID]` |
-| Get secret | `bws secret get <SECRET_ID>` |
-| Get value only | `bws secret get <ID> -o json \| jq -r '.value'` |
-| Run with secrets | `bws run --project-id <ID> -- <command>` |
-| Export as env | `bws secret list <ID> --output env` |
-| Create secret | `bws secret create KEY VALUE PROJECT_ID` |
-| Update secret | `bws secret edit <ID> --value "new-value"` |
-| Delete secret | `bws secret delete <SECRET_ID>` |
-
-## Example: Setting Up a New Project
-
-When user says "I need to set up Bitwarden secrets for my vibetracking project":
-
-**Respond with:**
-
-> I'll guide you through setting up Bitwarden Secrets Manager. Run these commands yourself:
->
-> **Step 1:** List your projects to find the project ID:
-> ```bash
-> bws project list
-> ```
->
-> **Step 2:** List secrets in your project:
-> ```bash
-> bws secret list <PROJECT_ID_FROM_STEP_1>
-> ```
->
-> **Step 3:** To run your app with secrets injected:
-> ```bash
-> bws run --project-id <PROJECT_ID> -- npm run dev
-> ```
->
-> **Step 4:** Or export to a local encrypted file:
-> ```bash
-> bws secret list <PROJECT_ID> --output env > .env.vibetracking
-> dotenvx encrypt -f .env.vibetracking
-> ```
->
-> Let me know when you've run these and I can help verify the setup!
-
-## Checks & Guardrails
-- Never display or log actual secret values
-- Use `--output json | jq -r '.value'` for scripts, not direct output
-- Verify `BWS_ACCESS_TOKEN` is set before running commands
-- Machine accounts have scoped access - verify project permissions
-- Rate limits apply when making many requests from same IP
-
-## Agent Workflow: Using Credentials with Browser Automation
-
-When the agent needs to simulate a user login or authenticated action:
-
-### Step 1: Retrieve Credentials
-The agent runs bws commands to get the credentials into environment variables:
-```bash
-# Agent executes this to get credentials
-bws secret get <SECRET_ID> -o json | jq -r '.value'
-```
-
-### Step 2: Use agent-browser for Automation
-
-```bash
-# Navigate to login page
-agent-browser open https://app.example.com/login
-
-# Get page structure and element refs
-agent-browser snapshot -i
-
-# Fill credentials (using retrieved values)
-agent-browser fill @e1 "<email>"
-agent-browser fill @e2 "<password>"
-
-# Submit
-agent-browser click @e3
-
-# Verify authenticated state
-agent-browser snapshot -i
-```
-
-### Step 3: Continue Authenticated Flow
-Once logged in, the agent can:
-- Navigate protected pages
-- Fill forms with user data
-- Test user-specific features
-- Verify permissions and access
-
-### Example: Complete Login Simulation
-
-```
-Agent retrieves: EMAIL=user@example.com, PASSWORD=***
-
-1. agent-browser open https://app.example.com/login
-2. agent-browser snapshot -i  # Get form field refs
-3. agent-browser fill @e1 "<retrieved email>"
-4. agent-browser fill @e2 "<retrieved password>"
-5. agent-browser click @e3  # Login button
-6. agent-browser snapshot -i  # Verify dashboard loaded
-```
-
-## References
-- [bws Commands Reference](references/bws-commands.md)
-- [Integration Patterns](references/integration-patterns.md)
+One real copy: `~/.agents/skills/bitwarden-secrets`. `~/.claude/skills`, `~/.codex/skills` and
+`~/.config/opencode/skills` symlink to it; `cloud-skills-sync` pushes it to Orb and Hermes.
+Edit only that copy. Do not add `shared-`/`local-claude-` copies (they are sync artefacts).
